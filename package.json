@@ -1,0 +1,23 @@
+{
+  "name": "skilltreatapi",
+  "version": "1.0.0",
+  "description": "api for skilltreat backend",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markgreenburg/skilltreatapi.git"
+  },
+  "author": "Mark Greenburg",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/markgreenburg/skilltreatapi/issues"
+  },
+  "homepage": "https://github.com/markgreenburg/skilltreatapi#readme",
+  "dependencies": {
+    "express": "^4.15.2",
+    "pg": "^6.1.3"
+  }
+}
