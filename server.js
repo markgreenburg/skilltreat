@@ -3,9 +3,14 @@
 const express = require('express');
 const app = express();
 
-/* Logging */
+// Logging
 const morgan = require('morgan');
 app.use(morgan('dev'));
+
+// Load request parser middleware
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
 
 // User routes
 const user = require('./routes/user');

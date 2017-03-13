@@ -90,22 +90,20 @@ module.exports = function(sequelize, DataTypes) {
     User.beforeCreate(updatePassword);
     User.beforeUpdate(updatePassword);
     
-    function updatePassword(user) {
-        if (user.changed('password')) {
-            return bcrypt.genSalt(12, function(err, salt) {
-                if (err) {
-                    return sequelize.Promise.reject(err);
-                }
-                bcrypt.hash(user.password, salt, function(err, hash) {
-                    if (err) {
-                        return sequelize.Promise.reject(err);
-                    }
-                    user.password = hash;
-                    return sequelize.Promise.resolve(user);
+    function updatePassword(instance, options, next) {
+        if (!instance.changed('password')) return next();
+
+        bcrypt.genSalt(12, function(err, salt) {
+                if (err) return next(err);
+
+                bcrypt.hash(instance.password, salt, function(err, hash) {
+                    if (err) return next(err);
+
+                    instance.password = hash;
+                    return next();
                 });
             });
         } 
-    }
 
     return User;
 }

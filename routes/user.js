@@ -5,32 +5,45 @@
  */
 const router = require('express').Router();
 const db = require('../models/index');
+const verifyEmail = require('../config/nodemailerConfig.js');
 const mailer = require('../mailer/mailer');
-const Promise = require('bluebird');
-const sendMail = Promise.promisify(mailer.sendMail, mailer);
 
 /* Create a new user */
 router.post('/user/register', (req, res) => {
-    db.User.create({
-        fname: req.body.fname,
-        lname: req.body.lname,
+    console.log("req body: ");
+    console.log(req.body);
+    // create new user
+    db.user.create({
+        fName: req.body.fName,
+        lName: req.body.lName,
         email: req.body.email,
         password: req.body.password,
     }).then((user) => {
-        // Create unique link
-        const verifyURL = "http://localhost:3000/api/user/verify?token=" + user.token;
         // Send email
-        sendMail({
-            from: "mark@markgreenburg.com",
+        mailer.sendMail({
+            from: verifyEmail.from,
             to: user.email,
-            subject: "Welcome! Please verify your account",
-            text: "Please verify your email before using Skilltreat by clicking"
-                    + " the following link or copy and pasting it into your"
-                    + " browser: " + verifyURL
+            subject: verifyEmail.subject,
+            text: verifyEmail.text + verifyEmail.baseUrl + user.token
         })
-        // Send response with user data
+            .then((response) => {
+                console.log(response);
+                res.status(200)
+                    .json({
+                        message: "Created user",
+                        data: user.id,
+                        success: true,
+                    });
+            })
     }).catch((err) => {
-        // Send response with error details
+        console.log(err);
+        res
+            .status(500)
+            .json({
+                message: "user creation failed",
+                data: err,
+                success: false
+            });
     });
 });
 
