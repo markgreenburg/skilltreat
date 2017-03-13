@@ -3,23 +3,6 @@
 /**
  * Database configuration and initialization
  */
-
-// Set active db
-// const dbInfo = require('../config/dbConfig');
-// const db = dbInfo.development;
-
-// // Connect to db and set up connection pool
-// const Sequelize = require('sequelize');
-// const sequelize = new Sequelize(db.database, db.username, db.password, {
-//     host: db.host,
-//     dialect: db.dialect,
-//     pool: db.pool,
-// });
-
-// module.exports = sequelize;
-// New stuff
-"use strict";
-
 const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
@@ -47,8 +30,8 @@ fs
         db[model.name] = model;
     });
 
+// Add imported models to the db instance
 Object.keys(db).forEach(function (modelName) {
-    console.log(modelName);
     if ("associate" in db[modelName]) {
         db[modelName].associate(db);
     }
@@ -56,5 +39,9 @@ Object.keys(db).forEach(function (modelName) {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
+// Define model relationships
+db.user.belongsToMany(db.elective, {through: 'electives_users'});
+db.elective.belongsToMany(db.user, {through: 'electives_users'});
 
 module.exports = db;

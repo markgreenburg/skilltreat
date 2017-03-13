@@ -7,6 +7,11 @@ const bcrypt = require('bcrypt');
 
 module.exports = function(sequelize, DataTypes) {
     const User = sequelize.define('user', {
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
         fName: {
             type: DataTypes.TEXT,
             allowNull: false,
@@ -47,6 +52,22 @@ module.exports = function(sequelize, DataTypes) {
             defaultValue: false,
             validate: {
                 notEmpty: true,
+            },
+        },
+        isSuspended: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        role: {
+            type: DataTypes.ENUM('user', 'teacher', 'admin'),
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+                isIn: [['user', 'teacher', 'admin']],
             },
         },
     });

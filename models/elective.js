@@ -6,24 +6,41 @@
 
 module.exports = function(sequelize, DataTypes) {
     const Elective = sequelize.define('elective', {
-        total: {
-            type: DataTypes.DECIMAL(10,2),
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        name: {
+            type: DataTypes.TEXT,
             allowNull: false,
             validate: {
                 notEmpty: true,
             },
         },
-    }, {
-        // TO-DO: fix association exec order
-        classMethods: {
-            associate: function(models) {
-                Elective.belongsTo(models.User, {
-                    foreignKey: {
-                        allowNull: false,
-                    },
-                });
-            }
-        }
+        description: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        image: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        // To-Do: Add one-to-one teacher to class relation
+        date: {},
+        startTime: {},
+        endTime: {},
+        totalSpaces: {},
+        reservedSpaces: {},
+        price: {},
+        // To-Do: Separate location table?
+        location: {},
     });
 
     return Elective;
