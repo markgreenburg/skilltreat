@@ -8,9 +8,9 @@ const bcrypt = require('bcrypt');
 module.exports = function(sequelize, DataTypes) {
     const User = sequelize.define('user', {
         id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
+            type: DataTypes.BIGINT,
             autoIncrement: true,
+            primaryKey: true,
         },
         fName: {
             type: DataTypes.TEXT,
@@ -60,14 +60,6 @@ module.exports = function(sequelize, DataTypes) {
             defaultValue: false,
             validate: {
                 notEmpty: true,
-            },
-        },
-        role: {
-            type: DataTypes.ENUM('user', 'teacher', 'admin'),
-            allowNull: false,
-            validate: {
-                notEmpty: true,
-                isIn: [['user', 'teacher', 'admin']],
             },
         },
     });

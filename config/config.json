@@ -1,0 +1,15 @@
+{
+    "development": {
+        "dialect": "postgres",
+        "seederStorage": "sequelize",
+        "database": "skilltreat",
+        "username": "postgres",
+        "password": "postgresql",
+        "host": "localhost",
+        "pool": {
+            "min": "0",
+            "max": "10",
+            "idle": "10000"
+        }
+    }
+}

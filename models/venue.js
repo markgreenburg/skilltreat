@@ -1,11 +1,11 @@
 'use strict';
 
-/**
- * Class / Elective database models
+/** 
+ * Table of hosting venues and businesses
  */
 
 module.exports = function(sequelize, DataTypes) {
-    const Elective = sequelize.define('elective', {
+    const Venue = sequelize.define('venue', {
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -32,44 +32,41 @@ module.exports = function(sequelize, DataTypes) {
                 notEmpty: true,
             },
         },
-        date: {
-            type: DataTypes.DATEONLY,
-            allowNull: true,
-            validate: {
-                isDate: true,
-            },
-        },
-        startTime: {
-            type: DataTypes.DATE,
-            allowNull: true,
-            validate: {
-                isDate: true,
-            },
-        },
-        endTime: {
-            type: DataTypes.DATE,
-            allowNull: true,
-            validate: {
-                isDate: true,
-            },
-        },
-        totalSpaces: {
+        capacity: {
             type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
                 notEmpty: true,
             },
         },
-        reservedSpaces: {
-            type: DataTypes.INTEGER,
+        addressLineOne: {
+            type: DataTypes.TEXT,
             allowNull: false,
-            defaultValue: 0,
             validate: {
                 notEmpty: true,
             },
         },
-        price: {
-            type: DataTypes.DECIMAL(10, 2),
+        addressLineTwo: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        addressCity: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        addressStateAbbr: {
+            type: DataTypes.STRING(2),
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+                isUppercase: true
+            },
+        },
+        addressZip: {
+            type: DataTypes.TEXT,
             allowNull: false,
             validate: {
                 notEmpty: true,
@@ -77,5 +74,5 @@ module.exports = function(sequelize, DataTypes) {
         },
     });
 
-    return Elective;
+    return Venue;
 }

@@ -7,15 +7,11 @@ const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
 const env = process.env.NODE_ENV || "development";
-const config = require(path.join(__dirname, '..', 'config', 'dbConfig'))[env];
+const config = require(path.join(__dirname, '..', 'config', 'config.json'))[env];
 if (process.env.DATABASE_URL) {
     var sequelize = new Sequelize(process.env.DATABASE_URL, config);
 } else {
-    var sequelize = new Sequelize(config.database, config.username, config.password, {
-        host: config.host,
-        dialect: config.dialect,
-        pool: config.pool,
-    });
+    var sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
 let db = {};
@@ -40,8 +36,12 @@ Object.keys(db).forEach(function (modelName) {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-// Define model relationships
-db.user.belongsToMany(db.elective, {through: 'electives_users'});
-db.elective.belongsToMany(db.user, {through: 'electives_users'});
-
+/* Define model relationships */
+db.user.belongsToMany(db.elective, {through: 'electives_users_types'});
+db.elective.belongsToMany(db.user, {through: 'electives_users_types'});
+db.user.belongsToMany(db.role, {through: 'roles_users'});
+db.elective.belongsToMany(db.order, {through: 'electives_orders'});
+db.venue.belongsToMany(db.elective, {through: 'electives_venues'});
+db.order.belongsTo(db.user);
+db.elective.belongsTo(db.venue);
 module.exports = db;

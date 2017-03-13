@@ -7,9 +7,9 @@
 module.exports = function(sequelize, DataTypes) {
     const Order = sequelize.define('order', {
         id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
+            type: DataTypes.BIGINT,
             autoIncrement: true,
+            primaryKey: true,
         },
         stripeId: {
             type: DataTypes.TEXT,
@@ -30,5 +30,7 @@ module.exports = function(sequelize, DataTypes) {
             allowNull: false,
             defaultValue: false,
         }
-    })
+    });
+
+    return Order;
 }
