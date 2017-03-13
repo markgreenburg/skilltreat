@@ -46,6 +46,22 @@ module.exports = function(sequelize, DataTypes) {
                 len: [1, 255],
             },
         },
+        verificationToken: {
+            type: DataTypes.UUID,
+            allowNull: false,
+            defaultValue: DataTypes.UUIDV4,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        verificationExpires: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: new Date(Date.now() + (1000 * 60 * 60 * 24)),
+            validate: {
+                notEmpty: true,
+            },
+        },
         isVerified: {
             type: DataTypes.BOOLEAN,
             allowNull: false,

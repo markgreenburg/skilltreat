@@ -4,10 +4,34 @@
  * User Routes - mounted at /api
  */
 const router = require('express').Router();
+const db = require('../models/index');
+const mailer = require('../mailer/mailer');
+const Promise = require('bluebird');
+const sendMail = Promise.promisify(mailer.sendMail, mailer);
 
-/* Create */
+/* Create a new user */
 router.post('/user/register', (req, res) => {
-    res.send("Create user route");
+    db.User.create({
+        fname: req.body.fname,
+        lname: req.body.lname,
+        email: req.body.email,
+        password: req.body.password,
+    }).then((user) => {
+        // Create unique link
+        const verifyURL = "http://localhost:3000/api/user/verify?token=" + user.token;
+        // Send email
+        sendMail({
+            from: "mark@markgreenburg.com",
+            to: user.email,
+            subject: "Welcome! Please verify your account",
+            text: "Please verify your email before using Skilltreat by clicking"
+                    + " the following link or copy and pasting it into your"
+                    + " browser: " + verifyURL
+        })
+        // Send response with user data
+    }).catch((err) => {
+        // Send response with error details
+    });
 });
 
 /* Read */
