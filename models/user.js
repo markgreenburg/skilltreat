@@ -78,6 +78,12 @@ module.exports = function(sequelize, DataTypes) {
                 notEmpty: true,
             },
         },
+    }, {
+        instanceMethods: {
+            authenticate: function(value) {
+                return bcrypt.compare(value, this.password);
+            }
+        }
     });
 
     // Convert emails to lowercase
@@ -89,24 +95,16 @@ module.exports = function(sequelize, DataTypes) {
     // Hash and salt passwords before creating and updating
     User.beforeCreate(updatePassword);
     User.beforeUpdate(updatePassword);
-    
     function updatePassword(instance, options, next) {
         if (!instance.changed('password')) return next();
-
-        bcrypt.genSalt(12, function(err, salt) {
-                if (err) return next(err);
-
-                bcrypt.hash(instance.password, salt, function(err, hash) {
-                    if (err) return next(err);
-
-                    instance.password = hash;
-                    return next();
-                });
-            });
-        } 
+        const saltRounds = 12;
+        bcrypt.hash(instance.password, saltRounds).then(function(hash) {
+            instance.password = hash;
+            next();
+        }).catch(function(err) {
+            next(err);
+        });
+    }
 
     return User;
 }
-
-
-

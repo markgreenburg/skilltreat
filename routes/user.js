@@ -24,7 +24,7 @@ router.post('/user/register', (req, res, next) => {
             subject: verifyEmail.subject,
             text: verifyEmail.baseText + verifyEmail.baseUrl 
                     + result.verificationToken
-        // Send response through API
+        // Send OK response
         }).then(() => {
             res.status(200).json({
                 message: "Created user. Email verification required.",
@@ -80,6 +80,40 @@ router.get('/user/verify', (req, res, next) => {
     });
 });
 
+/* Login */
+router.post('/user/login', (req, res, next) => {
+    const authError = new Error("Authentication Failed");
+    if ( typeof req.body.email === 'undefined'
+            || typeof req.body.password === 'undefined'
+            || req.body.email === null
+            || req.body.password === null 
+    ) {
+        return next(new Error("DB Error: username and password required"));
+    }
+    db.user.findOne({ where: {email: req.body.email} }).then((result) => {
+        if (!result) {
+            return next(authError);
+        }
+        result.authenticate(req.body.password).then((resolve) => {
+            if (resolve !== true) {
+                return next(authError);
+            }
+            // TO-DO: Implement real auth success response
+            res.status(200).json({
+                message: "Login Successful",
+                data: result.email,
+                success: true
+            });
+        }).catch((err) => {
+            console.log(err);
+            return next(authError);
+        });
+    }).catch((err) => {
+        console.log(err);
+        return next(new Error("DB Error: could not finish user search"));
+    });
+});
+
 /* Read */
 router.get('/user/load', (req, res, next) => {
     // Check which input given
@@ -114,20 +148,27 @@ router.get('/user/load', (req, res, next) => {
     });
 });
 
-/* Update PII */
-router.post('/user/:id/update/info', (req, res, next) => {
-    if (req.params.id == (undefined || null)) {
+/* Update */
+router.post('/user/:id/update', (req, res, next) => {
+    const info = req.body;
+    if ( typeof req.params.id === 'undefined' || req.params.id === null) {
         return next(new Error("DB Error: id not supplied"));
     }
     db.user.findOne({ where: {id: req.params.id} }).then((result) => {
         if (!result) { return next(new Error("User not found")); }
         // Only set attributes that are passed in through req.body
-        if (req.body.fName !== (undefined || null)) {
-            result.fName = req.body.fName;
-        } if (req.body.lName !== (undefined || null)) {
-            result.lName = req.body.lName;
-        } if (req.body.email !== (undefined || null)) {
-            result.email = req.body.email;
+        // TO-DO: DRY out by iterating through all object's props
+        if (typeof info.fName !== 'undefined' && info.fName !== null) {
+            result.fName = info.fName;
+        }
+        if (typeof info.lName !== 'undefined' && info.lName !== null) {
+            result.lName = info.lName;
+        }
+        if (typeof info.email !== 'undefined' && info.email !== null) {
+            result.email = info.email;
+        }
+        if (typeof info.password !== 'undefined' && info.password !== null) {
+            result.password = info.password;
         }
         result.save().then(() => {
             res.status(200).json({
@@ -136,40 +177,13 @@ router.post('/user/:id/update/info', (req, res, next) => {
                     fName: result.fName,
                     lName: result.lName,
                     email: result.email,
+                    password: "hidden"
                 },
                 success: true
             });
         }).catch((err) => {
             console.log(err);
             return next(new Error("DB Error: Could not update user info"));
-        });
-    }).catch((err) => {
-        console.log(err);
-        return next(new Error("DB Error: Could not complete user search"));
-    });
-});
-
-/* Update Password */
-router.post('/user/:id/update/password', (req, res, next) => {
-    if (req.params.id == (undefined || null)) {
-        return next(new Error("DB Error: id not supplied"));
-    } if (req.body.password == (undefined || null)) {
-        return next(new Error("DB Error: new password not supplied"));
-    }
-    db.user.findOne({ where: {id: req.params.id} }).then((result) => {
-        if (!result) {
-            return next(new Error("User not found"));
-        }
-        result.password = req.body.password;
-        result.save().then(() => {
-            res.status(200).json({
-                message: "User password updated",
-                data: result.email,
-                success: true
-            });
-        }).catch((err) => {
-            console.log(err);
-            return next(new Error("DB Error: Failed to save new password"));
         });
     }).catch((err) => {
         console.log(err);
