@@ -20,18 +20,19 @@ router.post('/user/register', (req, res) => {
         password: req.body.password,
     }).then((user) => {
         // Send email
-        console.log(mailer);
+        console.log(user);
         mailer.sendMail({
             from: verifyEmail.from,
             to: user.email,
             subject: verifyEmail.subject,
-            text: verifyEmail.text + verifyEmail.baseUrl + user.token
+            text: verifyEmail.baseText + verifyEmail.baseUrl 
+                    + user.verificationToken
         }).then((response) => {
             console.log(response);
             res.status(200)
                 .json({
                     message: "Created user",
-                    data: user.id,
+                    data: user,
                     success: true,
                 });
         }).catch((err) => {
