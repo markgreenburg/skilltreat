@@ -10,7 +10,7 @@ app.use(morgan('dev'));
 // Load request parser middleware
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // User routes
 const user = require('./routes/user');
