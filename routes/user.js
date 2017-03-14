@@ -91,8 +91,6 @@ router.get('/user/load', (req, res, next) => {
     } else {
         return next(new Error("DB Error: No search criteria supplied"));
     }
-    console.log("sql params:");
-    console.log(sqlParams);
     db.user.findOne({ where: sqlParams }).then((result) => {
         if (!result) {
             // TO-DO: set 404s for not found db resources
@@ -117,18 +115,89 @@ router.get('/user/load', (req, res, next) => {
 });
 
 /* Update PII */
-router.post('/user/:id/update/info', (req, res) => {
-    res.send("update user PII route");
+router.post('/user/:id/update/info', (req, res, next) => {
+    if (req.params.id == (undefined || null)) {
+        return next(new Error("DB Error: id not supplied"));
+    }
+    db.user.findOne({ where: {id: req.params.id} }).then((result) => {
+        if (!result) { return next(new Error("User not found")); }
+        // Only set attributes that are passed in through req.body
+        if (req.body.fName !== (undefined || null)) {
+            result.fName = req.body.fName;
+        } if (req.body.lName !== (undefined || null)) {
+            result.lName = req.body.lName;
+        } if (req.body.email !== (undefined || null)) {
+            result.email = req.body.email;
+        }
+        result.save().then(() => {
+            res.status(200).json({
+                message: "User updated",
+                data: {
+                    fName: result.fName,
+                    lName: result.lName,
+                    email: result.email,
+                },
+                success: true
+            });
+        }).catch((err) => {
+            console.log(err);
+            return next(new Error("DB Error: Could not update user info"));
+        });
+    }).catch((err) => {
+        console.log(err);
+        return next(new Error("DB Error: Could not complete user search"));
+    });
 });
 
 /* Update Password */
-router.post('/user/:id/update/password', (req, res) => {
-    res.send("update user password route");
+router.post('/user/:id/update/password', (req, res, next) => {
+    if (req.params.id == (undefined || null)) {
+        return next(new Error("DB Error: id not supplied"));
+    } if (req.body.password == (undefined || null)) {
+        return next(new Error("DB Error: new password not supplied"));
+    }
+    db.user.findOne({ where: {id: req.params.id} }).then((result) => {
+        if (!result) {
+            return next(new Error("User not found"));
+        }
+        result.password = req.body.password;
+        result.save().then(() => {
+            res.status(200).json({
+                message: "User password updated",
+                data: result.email,
+                success: true
+            });
+        }).catch((err) => {
+            console.log(err);
+            return next(new Error("DB Error: Failed to save new password"));
+        });
+    }).catch((err) => {
+        console.log(err);
+        return next(new Error("DB Error: Could not complete user search"));
+    });
 });
 
 /* Delete */
-router.post('/user/:id/delete', (req, res) => {
-    res.send("delete user route");
+router.post('/user/:id/delete', (req, res, next) => {
+    if (req.params.id == (undefined || null)) {
+        return next(new Error("No user ID supplied"));
+    }
+    db.user.findOne({ where: {id: req.params.id} }).then((result) => {
+        if (!result) { return next(new Error("User not found")); }
+        result.destroy().then(() => {
+            res.status(200).json({
+                message: "User permanently deleted",
+                data: {},
+                success: true
+            });
+        }).catch((err) => {
+            console.log(err);
+            return next(new Error("DB Error: could not destroy record"));
+        });
+    }).catch((err) => {
+        console.log(err);
+        return next(new Error("DB Error: could not complete user search"));
+    });
 });
 
 module.exports = router;
