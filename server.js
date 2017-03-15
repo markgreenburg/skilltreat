@@ -3,6 +3,16 @@
 const express = require('express');
 const app = express();
 
+/* Eventual Session Management Settings for WebApp */
+// const config = require("./config/config");
+// const session = require('express-session');
+// const timeOut = (1000 * 60 * 60 * 24); //24 hours
+// const sess = {
+//     secret: config.sessionSecret,
+//     maxAge: timeOut,
+//     cookie: {maxAge: timeOut}
+// };
+
 // Logging
 const morgan = require('morgan');
 app.use(morgan('dev'));

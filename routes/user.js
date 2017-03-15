@@ -5,10 +5,9 @@
  */
 const router = require('express').Router();
 const db = require('../models/index');
-const verifyEmail = require('../config/nodemailerConfig.js');
+const config = require('../config/config.js');
 const mailer = require('../mailer/mailer');
 const jwt = require('jsonwebtoken');
-const jwtSecret = require('../config/jwtConfig');
 const auth = require('../middleware/authenticate');
 
 /* Create a new user */
@@ -22,10 +21,10 @@ router.post('/user/register', (req, res, next) => {
     }).then((result) => {
         // Send email with verification token
         mailer.sendMail({
-            from: verifyEmail.from,
+            from: config.verificationEmail.from,
             to: result.email,
-            subject: verifyEmail.subject,
-            text: verifyEmail.baseText + verifyEmail.baseUrl 
+            subject: config.verificationEmail.subject,
+            text: config.verificationEmail.baseText + config.verificationEmail.baseUrl 
                     + result.verificationToken
         // Send OK response
         }).then(() => {
@@ -106,7 +105,7 @@ router.post('/user/login', (req, res, next) => {
             }
             // FYI - JWT is synchronous despite stupidly allowing a callback
             const authToken = jwt.sign({ id: result.id, email: result.email },
-                    jwtSecret, { expiresIn: "7 days" });
+                    config.jwtSecret, { expiresIn: "7 days" });
             res.status(200).json({
                 message: "Login Successful",
                 data: { token: authToken },

@@ -4,10 +4,11 @@
  */
 const nodeMailer = require('nodemailer');
 // const path = require('path');
-const config = require('../config/awsConfig');
+const config = require('../config/config');
 
 // Create a promisified nodemailer SES transport
 const Promise = require('bluebird');
-const transporter = Promise.promisifyAll(nodeMailer.createTransport(config));
+const transporter = Promise.promisifyAll(
+        nodeMailer.createTransport(config.smtpConfig));
 
 module.exports = transporter;

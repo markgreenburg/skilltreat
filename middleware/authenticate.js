@@ -4,7 +4,7 @@
  */
 //TO-DO: integrate multiple permission types
 // TO-DO: Add admin check
-const secret = require('../config/jwtConfig');
+const config = require('../config/config');
 const jwt = require('jsonwebtoken');
 
 const checkAuth = (req, res, next) => {
@@ -13,7 +13,7 @@ const checkAuth = (req, res, next) => {
     if (!token) {
         return next(new Error("Authentication Failed"));
     }
-    jwt.verify(token, secret, (err, result) => {
+    jwt.verify(token, config.jwtSecret, (err, result) => {
         if (err) {
             console.log(err);
             return next(new Error("Authentication Failed"));
