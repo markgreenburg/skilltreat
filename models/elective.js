@@ -18,6 +18,13 @@ module.exports = function(sequelize, DataTypes) {
                 notEmpty: true,
             },
         },
+        instructor: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
         description: {
             type: DataTypes.TEXT,
             allowNull: false,

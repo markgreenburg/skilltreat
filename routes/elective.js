@@ -7,6 +7,7 @@ const router = require('express').Router();
 const db = require('../models/index');
 const config = require('../config/config.js');
 const auth = require('../middleware/authenticate');
+const Promise = require('bluebird');
 // TO-DO: Auth all the relevant routes
 
 // TO-DO: Write owner user ID to the electives_users mapping table??
@@ -14,6 +15,7 @@ const auth = require('../middleware/authenticate');
 router.post('/elective/create', auth.checkAuth, (req, res, next) => {
     db.elective.create({
         name: req.body.name,
+        instructor: req.body.instructor,
         description: req.body.description,
         image: req.body.image,
         date: req.body.date,
@@ -125,6 +127,122 @@ router.post('/elective/:id/delete', auth.checkAuth, (req, res, next) => {
     }).catch((err) => {
         console.log(err);
         return next(new Error("DB Error: Could not search for elective"));
+    });
+});
+
+// TO-DO: Refactor - compose promises
+/* Add user to elective */
+router.post('/elective/:id/add_user', (req, res, next) => {
+    if ((typeof req.params.id === 'undefined' || req.params.id === null)
+            || typeof req.body.id === 'undefined' || req.body.id === null) {
+        return next(new Error("Elective ID and user ID required"));
+    }
+    db.elective
+        .findOne({ where: {id: req.params.id}}).then((elective) => {
+        if (!elective) return next(new Error("Elective not found"));
+        const remainingSpaces = elective.totalSpaces - elective.reservedSpaces;
+        if (remainingSpaces < 1) return next(new Error("Elective is full"));
+        const now = new Date();
+        if (elective.startTime < now) {
+            return next(new Error("Elective already started"));
+        }
+        db.user.findOne({ where: {id: req.body.id} }).then((user) => {
+            if (!user) return next(new Error("User not found"));
+            elective.setUsers([user]).then(() => {
+                res.status(200).json({
+                    message: "User added to elective",
+                    data: {
+                        electiveId: elective.id,
+                        userId: user.id,
+                        electiveName: elective.name,
+                        userEmail: user.email,
+                    },
+                    success: true
+                });
+            }).catch((err) => {
+                console.log(err);
+                return next(new Error("DB Error: could not add user"));
+            });
+        }).catch((err) => {
+            console.log(err);
+            return next(new Error("DB Error: could not search for user"));
+        });
+    }).catch((err) => {
+        console.log(err);
+        return next(new Error("DB Error: could not search for elective"));
+    });
+});
+
+/* Promise chaining test */
+// router.post('/elective/:id/add_user', (req, res, next) => {
+//     if ((typeof req.params.id === 'undefined' || req.params.id === null)
+//             || typeof req.body.id === 'undefined' || req.body.id === null) {
+//         return next(new Error("Elective ID and user ID required"));
+//     }
+//     db.elective
+//         .findOne({ where: {id: req.params.id}})
+//         .then((elective) => {
+//             if (!elective) {
+//                 return Promise.reject(new Error("Elective Not Found"));
+//             }
+//             const remainingSpaces = elective.totalSpaces - elective.reservedSpaces;
+//             if (remainingSpaces < 1) {
+//                 return Promise.reject(new Error("Elective is full"));
+//             }
+//             const now = new Date();
+//             if (elective.startTime < now) {
+//                 return Promise.reject(new Error("Elective already started"));
+//             }
+//             return db.user.findOne({ where: {id: req.body.id}})
+//         }).then((user) => {
+//             if (!user) {
+//                 return Promise.reject(new Error("User not found"));
+//             }
+//             return elective.setUsers([user])
+//         }).then(() => {
+//             res
+//                 .status(200)
+//                 .json({
+//                     message: "User added to elective",
+//                     data: {
+//                         electiveId: elective.id,
+//                         userId: user.id,
+//                         electiveName: elective.name,
+//                         userEmail: user.email,
+//                     },
+//                     success: true
+//                 });
+//         }).catch((err) => {
+//             console.log(err);
+//             return next(err);
+//     });
+// });
+
+/* Remove user from elective */
+router.post('/elective/:id/remove_user', (req, res, next) => {
+    if ((typeof req.params.id === 'undefined' || req.params.id === null)
+            || typeof req.body.id === 'undefined' || req.body.id === null) {
+        return next(new Error("Elective ID and user ID required"));
+    }
+    db.elective.findOne({ where: {id: req.params.id}}).then((elective) => {
+        if (!elective) return next(new Error("Elective not found"));
+        elective.removeUser([req.body.id]).then(() => {
+            res.status(200).json({
+                message: "User removed from elective",
+                data: {
+                    electiveId: elective.id,
+                    userId: req.body.id,
+                    electiveName: elective.name
+                },
+                success: true
+            });
+        }).catch((err) => {
+            console.log(err);
+            return next(new Error("DB Error: could not remove user"));
+        });
+    }).catch((err) => {
+        console.log(err);
+        return next(new Error("DB Error: could not search for user"));
     });
 });
 
