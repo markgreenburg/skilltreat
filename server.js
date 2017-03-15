@@ -25,6 +25,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // User routes
 const user = require('./routes/user');
 app.use('/api', user);
+// Elective routes
+const elective = require('./routes/elective');
+app.use('/api', elective);
 
 // Test db connection and export
 var models = require('./models/index');

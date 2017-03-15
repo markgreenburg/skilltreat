@@ -200,11 +200,11 @@ router.post('/user/:id/update', auth.checkAuth, auth.isSelf, (req, res, next) =>
 
 /* Delete */
 router.post('/user/:id/delete', auth.checkAuth, auth.isSelf, (req, res, next) => {
-    if (req.params.id == (undefined || null)) {
+    if (typeof req.params.id === undefined || req.params.id === null) {
         return next(new Error("No user ID supplied"));
     }
     db.user.findOne({ where: {id: req.params.id} }).then((result) => {
-        if (!result) { return next(new Error("User not found")); }
+        if (!result) return next(new Error("User not found"));
         result.destroy().then(() => {
             res.status(200).json({
                 message: "User permanently deleted",
