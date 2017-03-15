@@ -7,6 +7,9 @@ const router = require('express').Router();
 const db = require('../models/index');
 const verifyEmail = require('../config/nodemailerConfig.js');
 const mailer = require('../mailer/mailer');
+const jwt = require('jsonwebtoken');
+const jwtSecret = require('../config/jwtConfig');
+const auth = require('../middleware/authenticate');
 
 /* Create a new user */
 router.post('/user/register', (req, res, next) => {
@@ -48,8 +51,8 @@ router.post('/user/register', (req, res, next) => {
     });
 });
 
+// TO-DO: Auto-login on verification
 router.get('/user/verify', (req, res, next) => {
-    console.log(req);
     db.user.findOne({
         where: { verificationToken: req.query.token }
     }).then((result) => {
@@ -94,14 +97,19 @@ router.post('/user/login', (req, res, next) => {
         if (!result) {
             return next(authError);
         }
+        if (!result.isVerified) {
+            return next(new Error("Account not verified"));
+        }
         result.authenticate(req.body.password).then((resolve) => {
             if (resolve !== true) {
                 return next(authError);
             }
-            // TO-DO: Implement real auth success response
+            // FYI - JWT is synchronous despite stupidly allowing a callback
+            const authToken = jwt.sign({ id: result.id, email: result.email },
+                    jwtSecret, { expiresIn: "7 days" });
             res.status(200).json({
                 message: "Login Successful",
-                data: result.email,
+                data: { token: authToken },
                 success: true
             });
         }).catch((err) => {
@@ -115,7 +123,7 @@ router.post('/user/login', (req, res, next) => {
 });
 
 /* Read */
-router.get('/user/load', (req, res, next) => {
+router.get('/user/load', auth.checkAuth, auth.isSelf, (req, res, next) => {
     // Check which input given
     let sqlParams = {};
     if (req.query.id) {
@@ -149,7 +157,7 @@ router.get('/user/load', (req, res, next) => {
 });
 
 /* Update */
-router.post('/user/:id/update', (req, res, next) => {
+router.post('/user/:id/update', auth.checkAuth, auth.isSelf, (req, res, next) => {
     const info = req.body;
     if ( typeof req.params.id === 'undefined' || req.params.id === null) {
         return next(new Error("DB Error: id not supplied"));
@@ -192,7 +200,7 @@ router.post('/user/:id/update', (req, res, next) => {
 });
 
 /* Delete */
-router.post('/user/:id/delete', (req, res, next) => {
+router.post('/user/:id/delete', auth.checkAuth, auth.isSelf, (req, res, next) => {
     if (req.params.id == (undefined || null)) {
         return next(new Error("No user ID supplied"));
     }
