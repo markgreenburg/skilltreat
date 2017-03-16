@@ -13,7 +13,8 @@ const Promise = require('bluebird');
 // TO-DO: Write owner user ID to the electives_users mapping table??
 // TO-DO: Better error descriptions when fields missing
 /* Create a new elective */
-router.post('/elective/create', auth.checkAuth, (req, res, next) => {
+router.post('/elective/create', auth.checkAuth, auth.isAdmin, 
+        (req, res, next) => {
     db.elective
         .create({
             name: req.body.name,
@@ -65,8 +66,8 @@ router.get('/elective/:id/load', (req, res, next) => {
 });
 
 /* Update */
-// TO-DO: Allow for updating the class's owner
-router.post('/elective/:id/update', auth.checkAuth, (req, res, next) => {
+router.post('/elective/:id/update', auth.checkAuth, auth.isAdmin, 
+        (req, res, next) => {
     if (typeof req.params.id === 'undefined' || req.params.id === null) {
         return next(new Error("Elective ID required for update"));
     }
@@ -76,8 +77,13 @@ router.post('/elective/:id/update', auth.checkAuth, (req, res, next) => {
             if (!result) {
                 return Promise.reject(new Error("Elective not found"));
             }
-            if (typeof req.body.name !== 'undefined' && req.body.name !== null) {
+            if (typeof req.body.name !== 'undefined' 
+                    && req.body.name !== null) {
                 result.name = req.body.name;
+            }
+            if (typeof req.body.instructor !== 'undefined' 
+                    && req.body.instructor !== null) {
+                result.instructor = req.body.instructor;
             }
             if (typeof req.body.description !== 'undefined' 
                     && req.body.description !== null) {
@@ -124,7 +130,8 @@ router.post('/elective/:id/update', auth.checkAuth, (req, res, next) => {
 
 /* Delete */
 // TO-DO: Cascade delete to relevant linking tables
-router.post('/elective/:id/delete', auth.checkAuth, (req, res, next) => {
+router.post('/elective/:id/delete', auth.checkAuth, auth.isAdmin, 
+        (req, res, next) => {
     if (typeof req.params.id === 'undefined' || req.params.id === null) {
         return next(new Error("Elective ID required"));
     }
@@ -148,7 +155,8 @@ router.post('/elective/:id/delete', auth.checkAuth, (req, res, next) => {
 });
 
 /* Add user to elective */
-router.post('/elective/:id/add_user', (req, res, next) => {
+router.post('/elective/:id/add_user', auth.checkAuth, auth.isSelf, 
+        (req, res, next) => {
     const eId = req.params.id;
     const uId = req.body.id;
     if ((typeof eId === 'undefined' || eId === null)
@@ -188,7 +196,8 @@ router.post('/elective/:id/add_user', (req, res, next) => {
 });
 
 /* Remove user from elective */
-router.post('/elective/:id/remove_user', (req, res, next) => {
+router.post('/elective/:id/remove_user', auth.checkAuth, auth.isSelf, 
+        (req, res, next) => {
     const eId = req.params.id;
     const uId = req.body.id;
     if ((typeof eId === 'undefined' || eId === null)

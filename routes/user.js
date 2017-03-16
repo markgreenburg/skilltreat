@@ -9,6 +9,7 @@ const config = require('../config/config.js');
 const mailer = require('../mailer/mailer');
 const jwt = require('jsonwebtoken');
 const auth = require('../middleware/authenticate');
+const Promise = require('bluebird');
 
 /* Create a new user */
 router.post('/user/register', (req, res, next) => {
@@ -115,7 +116,7 @@ router.post('/user/login', (req, res, next) => {
             // FYI - JWT is bigly synchronous even though it allows a callback.
             // It's the most synchronous thing you've ever seen!
             const authToken = jwt.sign(
-                { id: foundUser.id, email: foundUser.email, },
+                { id: foundUser.id, email: foundUser.email, isAdmin: foundUser.isAdmin },
                 config.jwtSecret,
                 { expiresIn: "7 days" }
             );
@@ -138,7 +139,7 @@ router.post('/user/login', (req, res, next) => {
 });
 
 /* Log Out [blacklists token] */
-router.post('/user/:id/logout', auth.checkAuth, auth.revokeAuth, 
+router.post('/user/:id/logout', auth.checkAuth, auth.isSelf, auth.revokeAuth, 
         (req, res, next) => {
     if (!req.params.id) {
         return next(new Error("DB Error: No user ID supplied"));
@@ -185,7 +186,7 @@ router.get('/user/:id/load', auth.checkAuth, auth.isSelf, (req, res, next) => {
 });
 
 /* Update */
-router.post('/user/:id/update', auth.checkAuth, (req, res, next) => {
+router.post('/user/:id/update', auth.checkAuth, auth.isSelf, (req, res, next) => {
     const info = req.body;
     if ( typeof req.params.id === 'undefined' || req.params.id === null) {
         return next(new Error("DB Error: id not supplied"));
@@ -231,7 +232,7 @@ router.post('/user/:id/update', auth.checkAuth, (req, res, next) => {
 });
 
 /* Delete [also blacklists token] */
-router.post('/user/:id/delete', auth.checkAuth, auth.revokeAuth,
+router.post('/user/:id/delete', auth.checkAuth, auth.isSelf, auth.revokeAuth,
         (req, res, next) => {
     if (typeof req.params.id === undefined || req.params.id === null) {
         return next(new Error("No user ID supplied"));

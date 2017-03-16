@@ -43,5 +43,6 @@ db.user.belongsToMany(db.role, {through: 'roles_users'});
 db.elective.belongsToMany(db.order, {through: 'electives_orders'});
 db.venue.belongsToMany(db.elective, {through: 'electives_venues'});
 db.order.belongsTo(db.user);
+db.token.belongsTo(db.user);
 db.elective.belongsTo(db.venue);
 module.exports = db;

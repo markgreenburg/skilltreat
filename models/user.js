@@ -70,6 +70,14 @@ module.exports = function(sequelize, DataTypes) {
                 notEmpty: true,
             },
         },
+        isAdmin: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
         isSuspended: {
             type: DataTypes.BOOLEAN,
             allowNull: false,

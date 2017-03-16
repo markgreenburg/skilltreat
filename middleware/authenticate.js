@@ -37,7 +37,6 @@ const checkAuth = (req, res, next) => {
         });
 };
 
-// TO-DO: Give admins access
 const revokeAuth = (req, res, next) => {
     if (!req.params.id) {
         return next(new Error("DB Error: No user ID supplied"));
@@ -60,6 +59,18 @@ const revokeAuth = (req, res, next) => {
         });
 };
 
+const isAdmin = (req, res, next) => {
+    const auth = req.jwtPayload;
+    const authError = new Error("Not Authorized");
+    if (typeof auth.isAdmin === 'undefined' || auth.isAdmin === null) {
+        return next(authError);
+    }
+    if (auth.isAdmin === true) {
+        return next();
+    }
+    return next(authError);
+}
+
 /* Ensures actions being performed on own account */
 // TO-DO: Clarify id inputs to ensure they don't step on each other
 const isSelf = (req, res, next) => {
@@ -71,7 +82,7 @@ const isSelf = (req, res, next) => {
     ) {
         return next(authError);
     }
-    if (auth.id === req.params.id) {
+    if (auth.id === req.params.id || auth.isAdmin === true) {
         return next();
     }
     return next(authError);
@@ -80,5 +91,6 @@ const isSelf = (req, res, next) => {
 module.exports = {
     checkAuth: checkAuth,
     revokeAuth: revokeAuth,
-    isSelf: isSelf
+    isAdmin: isAdmin,
+    isSelf: isSelf,
 };
