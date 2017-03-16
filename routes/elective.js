@@ -5,7 +5,7 @@
  */
 const router = require('express').Router();
 const db = require('../models/index');
-const config = require('../config/config.js');
+// const config = require('../config/config.js');
 const auth = require('../middleware/authenticate');
 const Promise = require('bluebird');
 // TO-DO: Auth all the relevant routes
