@@ -11,6 +11,7 @@ const Promise = require('bluebird');
 // TO-DO: Auth all the relevant routes
 
 // TO-DO: Write owner user ID to the electives_users mapping table??
+// TO-DO: Better error descriptions when fields missing
 /* Create a new elective */
 router.post('/elective/create', auth.checkAuth, (req, res, next) => {
     db.elective
@@ -192,7 +193,7 @@ router.post('/elective/:id/remove_user', (req, res, next) => {
     const uId = req.body.id;
     if ((typeof eId === 'undefined' || eId === null)
             || typeof uId === 'undefined' || uId === null) {
-        return Promise.reject(new Error("Elective ID and user ID required"));
+        return next(new Error("Elective ID and user ID required"));
     }
     db.elective
         .findOne({
