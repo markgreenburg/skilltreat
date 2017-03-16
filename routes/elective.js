@@ -8,7 +8,6 @@ const db = require('../models/index');
 // const config = require('../config/config.js');
 const auth = require('../middleware/authenticate');
 const Promise = require('bluebird');
-// TO-DO: Auth all the relevant routes
 
 // TO-DO: Write owner user ID to the electives_users mapping table??
 // TO-DO: Better error descriptions when fields missing
@@ -25,7 +24,8 @@ router.post('/elective/create', auth.checkAuth, auth.isAdmin,
             startTime: req.body.startTime,
             endTime: req.body.endTime,
             totalSpaces: req.body.totalSpaces,
-            price: req.body.price
+            price: req.body.price,
+            venueId: req.body.venueId,
         }).then((result) => {
             res
                 .status(200)
@@ -135,7 +135,7 @@ router.post('/elective/:id/delete', auth.checkAuth, auth.isAdmin,
     if (typeof req.params.id === 'undefined' || req.params.id === null) {
         return next(new Error("Elective ID required"));
     }
-    db
+    db.elective
         .findOne({ where: {id: req.params.id} })
         .then((result) => {
             if (!result) {

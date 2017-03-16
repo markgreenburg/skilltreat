@@ -28,6 +28,9 @@ app.use('/api', user);
 // Elective routes
 const elective = require('./routes/elective');
 app.use('/api', elective);
+// Venue routes
+const venue = require('./routes/venue');
+app.use('/api', venue);
 
 // Test db connection and export
 var models = require('./models/index');
