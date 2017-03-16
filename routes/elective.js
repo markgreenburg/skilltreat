@@ -13,26 +13,29 @@ const Promise = require('bluebird');
 // TO-DO: Write owner user ID to the electives_users mapping table??
 /* Create a new elective */
 router.post('/elective/create', auth.checkAuth, (req, res, next) => {
-    db.elective.create({
-        name: req.body.name,
-        instructor: req.body.instructor,
-        description: req.body.description,
-        image: req.body.image,
-        date: req.body.date,
-        startTime: req.body.startTime,
-        endTime: req.body.endTime,
-        totalSpaces: req.body.totalSpaces,
-        price: req.body.price
-    }).then((result) => {
-        res.status(200).json({
-            message: "Class created successfully",
-            data: result,
-            success: true
+    db.elective
+        .create({
+            name: req.body.name,
+            instructor: req.body.instructor,
+            description: req.body.description,
+            image: req.body.image,
+            date: req.body.date,
+            startTime: req.body.startTime,
+            endTime: req.body.endTime,
+            totalSpaces: req.body.totalSpaces,
+            price: req.body.price
+        }).then((result) => {
+            res
+                .status(200)
+                .json({
+                    message: "Class created successfully",
+                    data: result,
+                    success: true
+                });
+        }).catch((err) => {
+            console.log(err);
+            return next(new Error("Could not create new elective"));
         });
-    }).catch((err) => {
-        console.log(err);
-        return next(new Error("Could not create new elective"));
-    });
 });
 
 /* Read */
@@ -41,16 +44,22 @@ router.get('/elective/:id/load', (req, res, next) => {
     if (typeof req.params.id === 'undefined' || req.params.id === null) {
         return next(new Error("Elective ID required for search"));
     }
-    db.elective.findOne({ where: {id: req.params.id} }).then((result) => {
-        if (!result) return next(new Error("Elective not found"));
-        res.status(200).json({
-            message: "Elective found",
-            data: result,
-            success: true
-        });
-    }).catch((err) => {
-        console.log(err);
-        return next(new Error("DB Error: Could not search for elective"));
+    db.elective
+        .findOne({ where: {id: req.params.id} })
+        .then((result) => {
+            if (!result) {
+                return Promise.reject(new Error("Elective not found"));
+            }
+            res
+                .status(200)
+                .json({
+                    message: "Elective found",
+                    data: result,
+                    success: true
+                });
+        }).catch((err) => {
+            console.log(err);
+            return next(err);
     });
 });
 
@@ -60,50 +69,56 @@ router.post('/elective/:id/update', auth.checkAuth, (req, res, next) => {
     if (typeof req.params.id === 'undefined' || req.params.id === null) {
         return next(new Error("Elective ID required for update"));
     }
-    db.elective.findOne({ where: {id: req.params.id} }).then((result) => {
-        if (!result) return next(new Error("Elective not found"));
-        if (typeof req.body.name !== 'undefined' && req.body.name !== null) {
-            result.name = req.body.name;
-        }
-        if (typeof req.body.description !== 'undefined' 
-                && req.body.description !== null) {
-            result.description = req.body.description;
-        }
-        if (typeof req.body.image !== 'undefined' && req.body.image !== null) {
-            result.image = req.body.image;
-        }
-        if (typeof req.body.date !== 'undefined' && req.body.date !== null) {
-            result.date = req.body.date;
-        }
-        if (typeof req.body.startTime !== 'undefined' 
-                && req.body.startTime !== null) {
-            result.startTime = req.body.startTime;
-        }
-        if (typeof req.body.endTime !== 'undefined' 
-                && req.body.endTime !== null) {
-            result.endTime = req.body.endTime;
-        }
-        if (typeof req.body.totalSpaces !== 'undefined' 
-                && req.body.totalSpaces !== null) {
-            result.totalSpaces = req.body.totalSpaces;
-        }
-        if (typeof req.body.price !== 'undefined' && req.body.price !== null) {
-            result.price = req.body.price;
-        }
-        result.save().then(() => {
-            res.status(200).json({
-                message: "Elective updated successfully",
-                data: result,
-                success: true
-            });
+    db.elective
+        .findOne({ where: {id: req.params.id} })
+        .then((result) => {
+            if (!result) {
+                return Promise.reject(new Error("Elective not found"));
+            }
+            if (typeof req.body.name !== 'undefined' && req.body.name !== null) {
+                result.name = req.body.name;
+            }
+            if (typeof req.body.description !== 'undefined' 
+                    && req.body.description !== null) {
+                result.description = req.body.description;
+            }
+            if (typeof req.body.image !== 'undefined' 
+                    && req.body.image !== null) {
+                result.image = req.body.image;
+            }
+            if (typeof req.body.date !== 'undefined' 
+                    && req.body.date !== null) {
+                result.date = req.body.date;
+            }
+            if (typeof req.body.startTime !== 'undefined' 
+                    && req.body.startTime !== null) {
+                result.startTime = req.body.startTime;
+            }
+            if (typeof req.body.endTime !== 'undefined' 
+                    && req.body.endTime !== null) {
+                result.endTime = req.body.endTime;
+            }
+            if (typeof req.body.totalSpaces !== 'undefined' 
+                    && req.body.totalSpaces !== null) {
+                result.totalSpaces = req.body.totalSpaces;
+            }
+            if (typeof req.body.price !== 'undefined' 
+                    && req.body.price !== null) {
+                result.price = req.body.price;
+            }
+            return result.save();
+        }).then((savedElective) => {
+            res
+                .status(200)
+                .json({
+                    message: "Elective updated successfully",
+                    data: savedElective,
+                    success: true
+                });
         }).catch((err) => {
             console.log(err);
-            return next(new Error("DB Error: could not save update"));
+            return next(err);
         });
-    }).catch((err) => {
-        console.log(err);
-        return next(new Error("DB Error: Could not search for elective"));
-    });
 });
 
 /* Delete */
@@ -112,9 +127,14 @@ router.post('/elective/:id/delete', auth.checkAuth, (req, res, next) => {
     if (typeof req.params.id === 'undefined' || req.params.id === null) {
         return next(new Error("Elective ID required"));
     }
-    db.findOne({ where: {id: req.params.id} }).then((result) => {
-        if (!result) return next(new Error("Elective not found"));
-        result.destroy().then(() => {
+    db
+        .findOne({ where: {id: req.params.id} })
+        .then((result) => {
+            if (!result) {
+                return Promise.reject(new Error("Elective not found"));
+            }
+            return result.destroy()
+        }).then(() => {
             res.status(200).json({
                 message: "Elective deleted",
                 data: {},
@@ -122,128 +142,87 @@ router.post('/elective/:id/delete', auth.checkAuth, (req, res, next) => {
             });
         }).catch((err) => {
             console.log(err);
-            return next(new Error("DB Error: Could not destroy record"));
+            return next(err);
         });
-    }).catch((err) => {
-        console.log(err);
-        return next(new Error("DB Error: Could not search for elective"));
-    });
 });
 
-// TO-DO: Refactor - compose promises
 /* Add user to elective */
 router.post('/elective/:id/add_user', (req, res, next) => {
-    if ((typeof req.params.id === 'undefined' || req.params.id === null)
-            || typeof req.body.id === 'undefined' || req.body.id === null) {
+    const eId = req.params.id;
+    const uId = req.body.id;
+    if ((typeof eId === 'undefined' || eId === null)
+            || typeof uId === 'undefined' || uId === null) {
         return next(new Error("Elective ID and user ID required"));
     }
     db.elective
-        .findOne({ where: {id: req.params.id}}).then((elective) => {
-        if (!elective) return next(new Error("Elective not found"));
-        const remainingSpaces = elective.totalSpaces - elective.reservedSpaces;
-        if (remainingSpaces < 1) return next(new Error("Elective is full"));
-        const now = new Date();
-        if (elective.startTime < now) {
-            return next(new Error("Elective already started"));
-        }
-        db.user.findOne({ where: {id: req.body.id} }).then((user) => {
-            if (!user) return next(new Error("User not found"));
-            elective.setUsers([user]).then(() => {
-                res.status(200).json({
+        .findOne({ where: {id: eId}})
+        .then((elective) => {
+            if (!elective) {
+                return Promise.reject(new Error("Elective Not Found"));
+            }
+            const remainingSpaces = elective.totalSpaces - elective.reservedSpaces;
+            if (!remainingSpaces) {
+                return Promise.reject(new Error("Elective is full"));
+            }
+            const now = new Date();
+            if (elective.startTime < now) {
+                return Promise.reject(new Error("Elective already started"));
+            }
+            return elective.setUsers([uId])
+        }).then(() => {
+            res
+                .status(200)
+                .json({
                     message: "User added to elective",
                     data: {
-                        electiveId: elective.id,
-                        userId: user.id,
-                        electiveName: elective.name,
-                        userEmail: user.email,
+                        electiveId: eId,
+                        userId: uId,
                     },
                     success: true
                 });
-            }).catch((err) => {
-                console.log(err);
-                return next(new Error("DB Error: could not add user"));
-            });
         }).catch((err) => {
             console.log(err);
-            return next(new Error("DB Error: could not search for user"));
+            return next(err);
         });
-    }).catch((err) => {
-        console.log(err);
-        return next(new Error("DB Error: could not search for elective"));
-    });
 });
-
-/* Promise chaining test */
-// router.post('/elective/:id/add_user', (req, res, next) => {
-//     if ((typeof req.params.id === 'undefined' || req.params.id === null)
-//             || typeof req.body.id === 'undefined' || req.body.id === null) {
-//         return next(new Error("Elective ID and user ID required"));
-//     }
-//     db.elective
-//         .findOne({ where: {id: req.params.id}})
-//         .then((elective) => {
-//             if (!elective) {
-//                 return Promise.reject(new Error("Elective Not Found"));
-//             }
-//             const remainingSpaces = elective.totalSpaces - elective.reservedSpaces;
-//             if (remainingSpaces < 1) {
-//                 return Promise.reject(new Error("Elective is full"));
-//             }
-//             const now = new Date();
-//             if (elective.startTime < now) {
-//                 return Promise.reject(new Error("Elective already started"));
-//             }
-//             return db.user.findOne({ where: {id: req.body.id}})
-//         }).then((user) => {
-//             if (!user) {
-//                 return Promise.reject(new Error("User not found"));
-//             }
-//             return elective.setUsers([user])
-//         }).then(() => {
-//             res
-//                 .status(200)
-//                 .json({
-//                     message: "User added to elective",
-//                     data: {
-//                         electiveId: elective.id,
-//                         userId: user.id,
-//                         electiveName: elective.name,
-//                         userEmail: user.email,
-//                     },
-//                     success: true
-//                 });
-//         }).catch((err) => {
-//             console.log(err);
-//             return next(err);
-//     });
-// });
 
 /* Remove user from elective */
 router.post('/elective/:id/remove_user', (req, res, next) => {
-    if ((typeof req.params.id === 'undefined' || req.params.id === null)
-            || typeof req.body.id === 'undefined' || req.body.id === null) {
-        return next(new Error("Elective ID and user ID required"));
+    const eId = req.params.id;
+    const uId = req.body.id;
+    if ((typeof eId === 'undefined' || eId === null)
+            || typeof uId === 'undefined' || uId === null) {
+        return Promise.reject(new Error("Elective ID and user ID required"));
     }
-    db.elective.findOne({ where: {id: req.params.id}}).then((elective) => {
-        if (!elective) return next(new Error("Elective not found"));
-        elective.removeUser([req.body.id]).then(() => {
-            res.status(200).json({
-                message: "User removed from elective",
-                data: {
-                    electiveId: elective.id,
-                    userId: req.body.id,
-                    electiveName: elective.name
-                },
-                success: true
-            });
+    db.elective
+        .findOne({
+            where: { id: eId },
+            include: [{
+                model: db.user,
+                where: { id: uId }
+            }]
+        }).then((elective) => {
+            if (!elective) {
+                return Promise.reject(new Error(
+                        "Elective and user combination not found"
+                ));
+            }
+            return elective.removeUser([uId]);
+        }).then(() => {
+            res
+                .status(200)
+                .json({
+                    message: "User removed from elective",
+                    data: {
+                        electiveId: eId,
+                        userId: uId,
+                    },
+                    success: true
+                });
         }).catch((err) => {
             console.log(err);
-            return next(new Error("DB Error: could not remove user"));
+            return next(err);
         });
-    }).catch((err) => {
-        console.log(err);
-        return next(new Error("DB Error: could not search for user"));
-    });
 });
 
 module.exports = router;
