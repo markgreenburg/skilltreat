@@ -53,6 +53,7 @@ router.post('/user/register', (req, res, next) => {
 });
 
 // TO-DO: Auto-login on verification
+// TO-DO: New endpoint for blacklisting a 'verify' token
 /* Verify Account Email */
 router.get('/user/verify', (req, res, next) => {
     db.user
@@ -105,7 +106,7 @@ router.post('/user/login', (req, res, next) => {
             if (!result.isVerified) {
                 return Promise.reject(new Error("Account not verified"));
             }
-            foundUser = result;
+            foundUser = result.dataValues;
             return result.authenticate(req.body.password);
         }).then((resolve) => {
             if (resolve !== true) {
@@ -118,11 +119,16 @@ router.post('/user/login', (req, res, next) => {
                 config.jwtSecret,
                 { expiresIn: "7 days" }
             );
+            return db.token.create({
+                token: authToken,
+                type: "authenticate",
+            });
+        }).then((token) => {
             res
                 .status(200)
                 .json({
                     message: "Login Successful",
-                    data: { token: authToken },
+                    data: { token: token.token },
                     success: true
                 });
         }).catch((err) => {
@@ -131,19 +137,28 @@ router.post('/user/login', (req, res, next) => {
         });
 });
 
+/* Log Out [blacklists token] */
+router.post('/user/:id/logout', auth.checkAuth, auth.revokeAuth, 
+        (req, res, next) => {
+    if (!req.params.id) {
+        return next(new Error("DB Error: No user ID supplied"));
+    }
+    res
+        .status(200)
+        .json({
+            message: "Token revoked",
+            data: {},
+            success: true
+        });
+});
+
 /* Read */
-router.get('/user/load', auth.checkAuth, auth.isSelf, (req, res, next) => {
-    // Check which input given
-    let sqlParams = {};
-    if (req.query.id) {
-        sqlParams = { id: req.query.id };
-    } else if (req.query.email) {
-        sqlParams = { email: req.query.email };
-    } else {
-        return next(new Error("DB Error: No search criteria supplied"));
+router.get('/user/:id/load', auth.checkAuth, auth.isSelf, (req, res, next) => {
+    if (!req.params.id) {
+        return next(new Error("No user ID supplied"));
     }
     db.user
-        .findOne({ where: sqlParams })
+        .findOne({ where: {id: req.params.id} })
         .then((result) => {
             if (!result) {
                 // TO-DO: set 404s for not found db resources
@@ -170,7 +185,7 @@ router.get('/user/load', auth.checkAuth, auth.isSelf, (req, res, next) => {
 });
 
 /* Update */
-router.post('/user/:id/update', auth.checkAuth, auth.isSelf, (req, res, next) => {
+router.post('/user/:id/update', auth.checkAuth, (req, res, next) => {
     const info = req.body;
     if ( typeof req.params.id === 'undefined' || req.params.id === null) {
         return next(new Error("DB Error: id not supplied"));
@@ -215,8 +230,8 @@ router.post('/user/:id/update', auth.checkAuth, auth.isSelf, (req, res, next) =>
         });
 });
 
-/* Delete */
-router.post('/user/:id/delete', auth.checkAuth, auth.isSelf,
+/* Delete [also blacklists token] */
+router.post('/user/:id/delete', auth.checkAuth, auth.revokeAuth,
         (req, res, next) => {
     if (typeof req.params.id === undefined || req.params.id === null) {
         return next(new Error("No user ID supplied"));
