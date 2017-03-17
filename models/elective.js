@@ -48,8 +48,9 @@ module.exports = function(sequelize, DataTypes) {
         },
         startTime: {
             type: DataTypes.DATE,
-            allowNull: true,
+            allowNull: false,
             validate: {
+                notEmpty: true,
                 isDate: true,
             },
         },

@@ -31,6 +31,10 @@ app.use('/api', elective);
 // Venue routes
 const venue = require('./routes/venue');
 app.use('/api', venue);
+// Cart routes
+const cart = require('./routes/cart');
+app.use('/api', cart);
+
 
 // Test db connection and export
 var models = require('./models/index');

@@ -43,6 +43,8 @@ db.user.belongsToMany(db.role, {through: 'roles_users'});
 db.elective.belongsToMany(db.order, {through: 'electives_orders'});
 db.venue.belongsToMany(db.elective, {through: 'electives_venues'});
 db.user.belongsToMany(db.order, {through: 'orders_users'});
+db.cart.belongsTo(db.user);
+db.cart.belongsTo(db.elective);
 db.order.belongsTo(db.user);
 db.token.belongsTo(db.user);
 db.elective.belongsTo(db.venue);

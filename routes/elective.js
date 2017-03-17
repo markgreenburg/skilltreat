@@ -40,7 +40,9 @@ router.post('/elective/create', auth.checkAuth, auth.isAdmin,
         });
 });
 
-/* Read */
+/* Read all future electives */
+
+/* Read Single Elective */
 // TO-DO: Include related table results to pull attendee, owner emails
 router.get('/elective/:id/load', (req, res, next) => {
     if (typeof req.params.id === 'undefined' || req.params.id === null) {
