@@ -63,6 +63,10 @@ router.post('/cart/add', auth.checkAuth, (req, res, next) => {
                 return Promise.reject(new Error(`Elective not found or already
                         started`));
             }
+            // TO-DO: Check to ensure quantity avail. in electives_orders
+            // 1.) Search for all matching electives in orders where not refunded
+            // 2.) Run reducer to total slots taken
+            // 3.) Run check to see if slots taken + quant <= totalSpaces
             return db.cart.create({
                     userId: req.jwtPayload.id,
                     electiveId: electiveId,
