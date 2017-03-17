@@ -58,7 +58,7 @@ router.post('/user/register', (req, res, next) => {
 /* Verify Account Email */
 router.get('/user/verify', (req, res, next) => {
     db.user
-        .findOne({where: {verificationToken: req.query.token} })
+        .findOne({ where: {verificationToken: req.query.token} })
         .then((result) => {
             if (!result) {
                 return Promise.reject(new Error('Token Not Found'));
@@ -138,12 +138,9 @@ router.post('/user/login', (req, res, next) => {
         });
 });
 
-/* Log Out [blacklists token] */
-router.post('/user/:id/logout', auth.checkAuth, auth.isSelf, auth.revokeAuth, 
-        (req, res, next) => {
-    if (!req.params.id) {
-        return next(new Error("DB Error: No user ID supplied"));
-    }
+/* Log Out */
+router.post('/user/logout', auth.checkAuth, (req, res, next) => {
+    
     res
         .status(200)
         .json({
@@ -154,15 +151,11 @@ router.post('/user/:id/logout', auth.checkAuth, auth.isSelf, auth.revokeAuth,
 });
 
 /* Read */
-router.get('/user/:id/load', auth.checkAuth, auth.isSelf, (req, res, next) => {
-    if (!req.params.id) {
-        return next(new Error("No user ID supplied"));
-    }
+router.get('/user/load', auth.checkAuth, (req, res, next) => {
     db.user
-        .findOne({ where: {id: req.params.id} })
+        .findOne({ where: {id: req.jwtPayload.id} })
         .then((result) => {
             if (!result) {
-                // TO-DO: set 404s for not found db resources
                 return Promise.reject(new Error("User Not Found"));
             }
             res
@@ -186,13 +179,10 @@ router.get('/user/:id/load', auth.checkAuth, auth.isSelf, (req, res, next) => {
 });
 
 /* Update */
-router.post('/user/:id/update', auth.checkAuth, auth.isSelf, (req, res, next) => {
+router.post('/user/update', auth.checkAuth, (req, res, next) => {
     const info = req.body;
-    if ( typeof req.params.id === 'undefined' || req.params.id === null) {
-        return next(new Error("DB Error: id not supplied"));
-    }
     db.user
-        .findOne({ where: {id: req.params.id} })
+        .findOne({ where: {id: req.jwtPayload.id} })
         .then((result) => {
             if (!result) {
                 return Promise.reject(new Error("User not found"));
@@ -232,13 +222,10 @@ router.post('/user/:id/update', auth.checkAuth, auth.isSelf, (req, res, next) =>
 });
 
 /* Delete [also blacklists token] */
-router.post('/user/:id/delete', auth.checkAuth, auth.isSelf, auth.revokeAuth,
+router.post('/user/delete', auth.checkAuth, auth.revokeAuth,
         (req, res, next) => {
-    if (typeof req.params.id === undefined || req.params.id === null) {
-        return next(new Error("No user ID supplied"));
-    }
     db.user
-        .findOne({ where: {id: req.params.id} })
+        .findOne({ where: {id: req.jwtPayload.id} })
         .then((result) => {
             if (!result) {
                 return Promise.reject(new Error("User not found"));

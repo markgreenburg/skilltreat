@@ -38,11 +38,10 @@ const checkAuth = (req, res, next) => {
 };
 
 const revokeAuth = (req, res, next) => {
-    if (!req.params.id) {
-        return next(new Error("DB Error: No user ID supplied"));
-    }
-    const token = req.body.token 
-            || req.query.token || req.headers['x-access-token'];
+    const token =
+            req.body.token
+            || req.query.token
+            || req.headers['x-access-token'];
     db.token
         .findOne({ where: { token: token} })
         .then((result) => {

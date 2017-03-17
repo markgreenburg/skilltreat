@@ -4,8 +4,8 @@
  * CRUD routes for user shopping cart
  */
 const router = require('express').Router();
-const db = require('./models/index');
-const auth = require('./middleware/authenticate');
+const db = require('../models/index');
+const auth = require('../middleware/authenticate');
 const Promise = require('bluebird');
 
 /* Read all non-expired cart entries for given user */
@@ -155,4 +155,4 @@ router.post('/cart/delete', auth.checkAuth, (req, res, next) => {
         });
 });
 
-
+module.exports = router;

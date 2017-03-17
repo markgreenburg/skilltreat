@@ -68,14 +68,6 @@ module.exports = function(sequelize, DataTypes) {
                 notEmpty: true,
             },
         },
-        reservedSpaces: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            defaultValue: 0,
-            validate: {
-                notEmpty: true,
-            },
-        },
         price: {
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false,

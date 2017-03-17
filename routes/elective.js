@@ -11,6 +11,36 @@ const Promise = require('bluebird');
 
 // TO-DO: Write owner user ID to the electives_users mapping table??
 // TO-DO: Better error descriptions when fields missing
+
+/* Load all non-expired electives */
+router.get('/elective', (req, res, next) => {
+    db.elective
+        .findAll({
+            where: {
+                startTime: {
+                    gte: new Date()
+                }
+            }
+        }).then((results) => {
+            if (!results) {
+                return Promise.reject(
+                    new Error("No upcoming electives found")
+                );
+            }
+            res
+                .status(200)
+                .json({
+                    message: "Found upcoming electives",
+                    data: results,
+                    success: true
+                });
+        }).catch((err) => {
+            console.log(err);
+            return next(err);
+        })
+})
+
+
 /* Create a new elective */
 router.post('/elective/create', auth.checkAuth, auth.isAdmin, 
         (req, res, next) => {
@@ -45,9 +75,6 @@ router.post('/elective/create', auth.checkAuth, auth.isAdmin,
 /* Read Single Elective */
 // TO-DO: Include related table results to pull attendee, owner emails
 router.get('/elective/:id/load', (req, res, next) => {
-    if (typeof req.params.id === 'undefined' || req.params.id === null) {
-        return next(new Error("Elective ID required for search"));
-    }
     db.elective
         .findOne({ where: {id: req.params.id} })
         .then((result) => {
@@ -157,10 +184,9 @@ router.post('/elective/:id/delete', auth.checkAuth, auth.isAdmin,
 });
 
 /* Add user to elective */
-router.post('/elective/:id/add_user', auth.checkAuth, auth.isSelf, 
-        (req, res, next) => {
+router.post('/elective/:id/add_user', auth.checkAuth, (req, res, next) => {
     const eId = req.params.id;
-    const uId = req.body.id;
+    const uId = req.jwtPayload.id;
     if ((typeof eId === 'undefined' || eId === null)
             || typeof uId === 'undefined' || uId === null) {
         return next(new Error("Elective ID and user ID required"));
@@ -171,6 +197,7 @@ router.post('/elective/:id/add_user', auth.checkAuth, auth.isSelf,
             if (!elective) {
                 return Promise.reject(new Error("Elective Not Found"));
             }
+            // REFACTOR - need to summarize from orders table instead
             const remainingSpaces = elective.totalSpaces - elective.reservedSpaces;
             if (!remainingSpaces) {
                 return Promise.reject(new Error("Elective is full"));
@@ -198,10 +225,9 @@ router.post('/elective/:id/add_user', auth.checkAuth, auth.isSelf,
 });
 
 /* Remove user from elective */
-router.post('/elective/:id/remove_user', auth.checkAuth, auth.isSelf, 
-        (req, res, next) => {
+router.post('/elective/:id/remove_user', auth.checkAuth, (req, res, next) => {
     const eId = req.params.id;
-    const uId = req.body.id;
+    const uId = req.jwtPayload.id;
     if ((typeof eId === 'undefined' || eId === null)
             || typeof uId === 'undefined' || uId === null) {
         return next(new Error("Elective ID and user ID required"));
