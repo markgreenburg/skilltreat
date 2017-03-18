@@ -48,9 +48,13 @@ router.post('/cart/add', auth.checkAuth, (req, res, next) => {
         (typeof electiveId === 'undefined' || electiveId === null)
         || (typeof quantity === 'undefined' || quantity === null)
     ) {
-        return next(new Error('Must provide user, elective, and quantity'));
+        return next(new Error('Must provide elective and quantity'));
+    }
+    if (quantity < 0) {
+        return next(new Error("Quantity cannot be negative"));
     }
     db.elective
+        // 1. Find elective, restrict by start time
         .findOne({
             where: {
                 id: electiveId,
@@ -58,26 +62,33 @@ router.post('/cart/add', auth.checkAuth, (req, res, next) => {
                     gte: new Date(),
                 },
             },
+        // 2. Update the elective's open slots with given quantity
         }).then((elective) => {
             if (!elective) {
                 return Promise.reject(new Error(`Elective not found or already
                         started`));
             }
-            // TO-DO: Check to ensure quantity avail. in electives_orders
-            // 1.) Search for all matching electives in orders where not refunded
-            // 2.) Run reducer to total slots taken
-            // 3.) Run check to see if slots taken + quant <= totalSpaces
+            const updatedSpaces = elective.openSpaces - quantity;
+            if (updatedSpaces < 0) {
+                return Promise.reject(new Error(`Quantity exceeds remaining 
+                        capacity`));
+            }
+            elective.openSpaces = updatedSpaces;
+            return elective.save();
+        // 3. Add elective to user's cart
+        }).then(() => {
             return db.cart.create({
-                    userId: req.jwtPayload.id,
-                    electiveId: electiveId,
-                    quantity: quantity,
+                quantity: quantity,
+                userId: req.jwtPayload.id,
+                electiveId: electiveId
             });
-        }).then((cart) => {
+        // 4. Send response
+        }).then((cartItem) => {
             res
                 .status(200)
                 .json({
-                    message: "Elective added to user cart successfully",
-                    data: cart,
+                    message: "Elective added to cart",
+                    data: cartItem,
                     success: true
                 });
         }).catch((err) => {
@@ -96,6 +107,9 @@ router.post('/cart/update', auth.checkAuth, (req, res, next) => {
     ) {
         return next(new Error("Elective and new quantity required"));
     }
+    if (quantity < 0) {
+        return next(new Error("Quantity cannot be negative"));
+    }
     let foundCart = {};
     db.cart
         .findOne({ 
@@ -113,8 +127,7 @@ router.post('/cart/update', auth.checkAuth, (req, res, next) => {
             if (!elective) {
                 return Promise.reject(new Error("Elective not found"));
             }
-            const spaceLeft = elective.totalSpaces - elective.reservedSpaces;
-            if (quantity >= spaceLeft) {
+            if (quantity > elective.openSpaces) {
                 return Promise.reject(new Error("Exceeds open spaces"));
             }
             foundCart.quantity = quantity;

@@ -53,6 +53,7 @@ router.post('/elective/create', auth.checkAuth, auth.isAdmin,
             date: req.body.date,
             startTime: req.body.startTime,
             endTime: req.body.endTime,
+            openSpaces: req.body.openSpaces,
             totalSpaces: req.body.totalSpaces,
             price: req.body.price,
             venueId: req.body.venueId,
@@ -133,6 +134,10 @@ router.post('/elective/:id/update', auth.checkAuth, auth.isAdmin,
             if (typeof req.body.endTime !== 'undefined' 
                     && req.body.endTime !== null) {
                 result.endTime = req.body.endTime;
+            }
+            if (typeof req.body.openSpaces !== 'undefined' 
+                    && req.body.openSpaces !== null) {
+                result.openSpaces = req.body.openSpaces;
             }
             if (typeof req.body.totalSpaces !== 'undefined' 
                     && req.body.totalSpaces !== null) {

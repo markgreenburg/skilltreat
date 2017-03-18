@@ -61,6 +61,13 @@ module.exports = function(sequelize, DataTypes) {
                 isDate: true,
             },
         },
+        openSpaces: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
         totalSpaces: {
             type: DataTypes.INTEGER,
             allowNull: false,

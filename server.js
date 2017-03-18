@@ -34,6 +34,9 @@ app.use('/api', venue);
 // Cart routes
 const cart = require('./routes/cart');
 app.use('/api', cart);
+// Order routes
+const order = require('./routes/order');
+app.use('/api', order);
 
 
 // Test db connection and export
