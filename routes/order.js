@@ -47,9 +47,12 @@ router
         let foundCartItems = [];
         db.order
             // 2. Create a new order with the paid amount and stripe info
-            .create({ stripeId: stripeId, total: total })
+            .create({ 
+                stripeId: stripeId, 
+                total: total, 
+                userId: req.jwtPayload.id
             // 3. Get user's active cart items
-            .then((order) => {
+            }).then((order) => {
                 newOrder = order;
                 return db.cart.findAll({ 
                     where: {
@@ -66,7 +69,7 @@ router
                 });
             // 4. Copy cart items over to electives_orders table
             }).then((cartItems) => {
-                if (!cartItems || cartItems.len === 0) {
+                if (!cartItems.len === 0) {
                     return Promise.reject(new Error("No items found in cart"));
                 }
                 foundCartItems = cartItems;

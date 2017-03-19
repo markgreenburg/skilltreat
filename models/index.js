@@ -39,8 +39,12 @@ db.Sequelize = Sequelize;
 /* Define model relationships */
 db.user.belongsToMany(db.elective, {through: 'electives_users'});
 db.elective.belongsToMany(db.user, {through: 'electives_users'});
-db.order.belongsToMany(db.elective, {through: db.electives_orders});
-db.elective.belongsToMany(db.order, {through: db.electives_orders});
+db.order.belongsToMany(db.elective, {
+    through: { model: db.electives_orders, unique: false }
+});
+db.elective.belongsToMany(db.order, {
+    through: { model: db.electives_orders, unique: false }
+});
 db.cart.belongsTo(db.user);
 db.cart.belongsTo(db.elective);
 db.order.belongsTo(db.user);

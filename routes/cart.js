@@ -24,9 +24,6 @@ router.get('/cart', auth.checkAuth, (req, res, next) => {
                 },
             }],
         }).then((results) => {
-            if (!results) {
-                return Promise.reject(new Error("No items in cart"));
-            }
             res
                 .status(200)
                 .json({
