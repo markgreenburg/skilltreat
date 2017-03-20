@@ -43,12 +43,21 @@ app.use('/api', order);
 var models = require('./models/index');
 const env = process.env.NODE_ENV || "development";
 if (env == "development") {
-    models.sequelize.sync({ force: true })
+    models.sequelize
+        .sync({ force: true })
         .then(function() {
+            console.log(process.env.NODE_ENV, " Environment running on 3000");
             app.listen(3000);
         }).catch((err) => {
             throw new Error(err);
         });
 } else {
-    app.listen(3000);
+    models.sequelize
+        .sync({ force: false })
+        .then(function() {
+            console.log(process.env.NODE_ENV, " Environment running on 3000");
+            app.listen(3000);
+        }).catch((err) => {
+            throw new Error(err);
+        });
 }
