@@ -53,7 +53,7 @@ if (env == "development") {
         });
 } else {
     models.sequelize
-        .sync({ force: true })
+        .sync({ force: false })
         .then(function() {
             console.log(process.env.NODE_ENV, " Environment running on 3000");
             app.listen(3000);
