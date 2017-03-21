@@ -9,17 +9,20 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
+  Button
 } from 'react-native';
-import ViewContainer from './src/components/ViewContainer';
+import { StackNavigator, TabNavigator } from 'react-navigation';
 
-export default class SkilltreatNative extends Component {
-  render() {
-    return (
-      <ViewContainer>
-      </ViewContainer>
-    );
-  }
-}
+/* Custom Modules */
+import ElectiveGrid from './src/components/ElectiveGrid';
+import Cart from './src/components/Cart';
+import Account from './src/components/Account';
+
+const SkilltreatNative = TabNavigator({
+  Upcoming: { screen: ElectiveGrid },
+  Cart: { screen: Cart },
+  Account: { screen: Account },
+});
 
 AppRegistry.registerComponent('SkilltreatNative', () => SkilltreatNative);

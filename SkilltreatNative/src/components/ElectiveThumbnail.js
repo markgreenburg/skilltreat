@@ -3,20 +3,23 @@ import React, { Component } from 'react';
 import { 
     View,
     StyleSheet,
-    Text
- } from 'react-native';
+    Text,
+    Button,
+} from 'react-native';
+import Elective from './Elective';
 
 class ElectiveThumbnail extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
-    }
+
     render() {
         return (
             <View>
-                <Text  style={styles.container}>
-                    This is a Thumbnail of all the electives
+                <Text style={this.styles}>
+                    {this.props.elective.name}
                 </Text>
+                <Button
+                    onPress={() => this.props.navigate}
+                    title="View"
+                />
             </View>
         );
     }

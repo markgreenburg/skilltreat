@@ -3,32 +3,80 @@ import React, { Component } from 'react';
 import { 
     View,
     StyleSheet,
-    Text
+    Text,
+    ScrollView,
  } from 'react-native';
+ import { StackNavigator } from 'react-navigation';
+import { List, ListItem } from 'react-native-elements';
 
-class ElectiveGrid extends Component {
+ /* Import Elective Components */
+ import ElectiveThumbnail from './ElectiveThumbnail';
+ import Elective from './Elective';
+
+class ElectiveGrid extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            electiveList: [],
+        };
     }
+
+    componentDidMount() {
+        fetch('https://skilltreats.com/api/elective')
+            .then(electives => electives.json())
+            .then((jsonifiedElectives) => {
+                let electiveList = jsonifiedElectives.data.map((row) => {
+                    return {
+                        id: row.id,
+                        name: row.name,
+                        image: row.image,
+                        description: row.description,
+                        date: row.date,
+                        startTime: row.startTime,
+                        endTime: row.endTime
+                    }
+                });
+                this.setState({ electiveList: electiveList });
+            }).catch((err) => {
+                console.log(err);
+            });
+    }
+
+    static navigationOptions = {
+        title: "Browse Treats",
+    };
+
     render() {
-        return (
-            <View>
-                <Text  style={styles.container}>
-                    This is a grid of all the electives
-                </Text>
-            </View>
-        );
+        const { navigate } = this.props.navigation;
+        console.log("this.state.electiveList:");
+        console.log(this.state.electiveList);
+        if (!this.state.electiveList.length) {
+            return (
+                <Text>Loading fresh electives...</Text>
+            );
+        } else {
+            return (
+                <ScrollView>
+                    {
+                        this.state.electiveList.map((elective) => {
+                            return (
+                                <ElectiveThumbnail
+                                    elective={elective}
+                                    key={elective.id}
+                                    navigate={navigate('Elective')}
+                                />
+                            );
+                        })
+                    }
+                </ScrollView>
+            );
+        }
     }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'stretch',
-    backgroundColor: 'darkgray',
-  },
-});
+const ElectiveNavigator = StackNavigator({
+    ElectiveGrid: { screen: ElectiveGrid },
+    Elective: { screen: Elective },
+})
 
 export default ElectiveGrid;
