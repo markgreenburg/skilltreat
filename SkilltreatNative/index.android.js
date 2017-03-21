@@ -12,15 +12,16 @@ import {
   View,
   Button
 } from 'react-native';
-import { StackNavigator, TabNavigator } from 'react-navigation';
+import { TabNavigator } from 'react-navigation';
 
 /* Custom Modules */
+import ElectiveNavigator from './src/components/ElectiveNavigator';
 import ElectiveGrid from './src/components/ElectiveGrid';
 import Cart from './src/components/Cart';
 import Account from './src/components/Account';
 
 const SkilltreatNative = TabNavigator({
-  Upcoming: { screen: ElectiveGrid },
+  Upcoming: { screen: ElectiveNavigator },
   Cart: { screen: Cart },
   Account: { screen: Account },
 });

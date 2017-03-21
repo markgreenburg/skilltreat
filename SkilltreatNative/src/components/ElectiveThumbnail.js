@@ -16,10 +16,6 @@ class ElectiveThumbnail extends Component {
                 <Text style={this.styles}>
                     {this.props.elective.name}
                 </Text>
-                <Button
-                    onPress={() => this.props.navigate}
-                    title="View"
-                />
             </View>
         );
     }

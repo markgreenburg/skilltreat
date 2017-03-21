@@ -9,8 +9,9 @@ import {
 class Elective extends React.Component {
 
     render() {
+        const { params } = this.props.navigation.state;
         return (<View>
-                    <Text>{this.props.elective.name}</Text>
+                    <Text>{params.elective.name}</Text>
                 </View>
         );
     }
