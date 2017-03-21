@@ -6,17 +6,12 @@ import {
     Text,
     ScrollView,
  } from 'react-native';
-import { Card, ListItem, Button } from 'react-native-elements';
+import { Card, Button } from 'react-native-elements';
 
- /* Import Elective Components */
- import ElectiveThumbnail from './ElectiveThumbnail';
-
-class ElectiveGrid extends React.Component {
+class ElectiveList extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            electives: [],
-        };
+        this.state = { electives: [], };
     }
 
     componentDidMount() {
@@ -26,16 +21,20 @@ class ElectiveGrid extends React.Component {
             .catch(err => console.log(err));
     }
 
+    static navigationOptions = {
+        title: "All Upcoming Treats"
+    }
+
     render() {
         const { navigate } = this.props.navigation;
-        console.log("this.state.electives:");
-        console.log(this.state.electives);
         if (!this.state.electives.length) {
             return (
                 <Text>Loading fresh electives...</Text>
             );
         } else {
             return (
+                // TO-DO: refactor using ListView for faster loading
+                // TO-DO: extract Card to own component for reusability
                 <ScrollView>
                     {
                         this.state.electives.map((elective) => {
@@ -66,4 +65,4 @@ class ElectiveGrid extends React.Component {
     }
 }
 
-export default ElectiveGrid;
+export default ElectiveList;

@@ -15,15 +15,17 @@ import {
 import { TabNavigator } from 'react-navigation';
 
 /* Custom Modules */
-import ElectiveNavigator from './src/components/ElectiveNavigator';
-import ElectiveGrid from './src/components/ElectiveGrid';
-import Cart from './src/components/Cart';
-import Account from './src/components/Account';
+import ElectiveNavigator from './src/components/navigators/ElectiveNavigator';
+import CartNavigator from './src/components/navigators/CartNavigator';
+import AccountNavigator from './src/components/navigators/AccountNavigator';
 
+
+/* App layout is contained within a 3-tab react-native-navigation comopnent */
 const SkilltreatNative = TabNavigator({
-  Upcoming: { screen: ElectiveNavigator },
-  Cart: { screen: Cart },
-  Account: { screen: Account },
+    Upcoming: { screen: ElectiveNavigator },
+    Cart: { screen: CartNavigator },
+    Account: { screen: AccountNavigator },
 });
 
+/* Uncomment if Test Pack Deleted */
 AppRegistry.registerComponent('SkilltreatNative', () => SkilltreatNative);
