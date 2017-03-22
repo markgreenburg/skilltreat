@@ -10,9 +10,6 @@ import { List, ListItem, Button } from 'react-native-elements';
 import { getToken } from '../../Authentication';
 const Promie = require('bluebird');
 
-/* Custom components */
-import Login from './Login';
-
 class CartList extends React.Component {
     constructor() {
         super();
@@ -28,7 +25,7 @@ class CartList extends React.Component {
         .then((token) => {
             if (!token) {
                 console.log("Cart Tab Mounted");
-                
+
                 return;
             }
             // Set token to state since we'll need it again later
