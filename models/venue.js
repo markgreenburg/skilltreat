@@ -39,6 +39,20 @@ module.exports = function(sequelize, DataTypes) {
                 notEmpty: true,
             },
         },
+        lat: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        lng: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
         addressLineOne: {
             type: DataTypes.TEXT,
             allowNull: false,

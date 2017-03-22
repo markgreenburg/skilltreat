@@ -77,8 +77,13 @@ router.post('/elective/create', auth.checkAuth, auth.isAdmin,
 // TO-DO: Include related table results to pull attendee, owner emails
 router.get('/elective/:id/load', (req, res, next) => {
     db.elective
-        .findOne({ where: {id: req.params.id} })
-        .then((result) => {
+        .findOne({ 
+            where: {
+                id: req.params.id
+            }, include: [{
+                model: db.venue
+            }]
+        }).then((result) => {
             if (!result) {
                 return Promise.reject(new Error("Elective not found"));
             }
