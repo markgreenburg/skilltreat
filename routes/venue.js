@@ -23,6 +23,8 @@ router.post('/venue/create', auth.checkAuth, auth.isAdmin,
             addressCity: req.body.addressCity,
             addressStateAbbr: req.body.addressStateAbbr,
             addressZip: req.body.addressZip,
+            lat: req.body.lat,
+            lng: req.body.lng,
         }).then((result) => {
             res
                 .status(200)
