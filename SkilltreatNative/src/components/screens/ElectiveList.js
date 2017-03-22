@@ -17,8 +17,10 @@ class ElectiveList extends React.Component {
     componentDidMount() {
         fetch('https://skilltreats.com/api/elective')
             .then(electives => electives.json())
-            .then(jsonified => this.setState({ electives: jsonified.data}))
-            .catch(err => console.log(err));
+            .then((jsonified) => {
+                this.setState({ electives: jsonified.data});
+                console.log("Elective Tab Mounted");
+            }).catch(err => console.log(err));
     }
 
     render() {

@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { List, ListItem, Button } from 'react-native-elements';
 import { getToken } from '../../Authentication';
+const Promie = require('bluebird');
 
 /* Custom components */
 import Login from './Login';
@@ -16,20 +17,22 @@ class CartList extends React.Component {
     constructor() {
         super();
         this.state = { cartItems: [], token: "" }
+
+        this.removeFromCart = this.removeFromCart.bind(this);
     }
 
     componentDidMount() {
         // 1. Get the token from storage
-        console.log("getting token...");
         getToken()
         // 2. Fetch cart using the token
         .then((token) => {
             if (!token) {
-                console.log("No token found");
-                const { navigate } = this.props.navigation;
-                return navigate('Login');
+                console.log("Cart Tab Mounted");
+                
+                return;
             }
-            console.log("token found");
+            // Set token to state since we'll need it again later
+            this.setState({token: token});
             // Set options
             const baseUrl = 'https://skilltreats.com/api/cart';
             const reqHeader = new Headers({
@@ -46,9 +49,43 @@ class CartList extends React.Component {
             return cartItems.json()
         }).then((jsonified) => {
             this.setState({cartItems: jsonified.data});
-            console.log("this.state.cartItems");
-            console.log(this.state.cartItems);
+            console.log("Cart Tab Mounted");
         }).catch((err) => console.log(err));
+    }
+
+    removeFromCart(id) {
+        console.log("removing!");
+        // Set up the fetch
+        const baseUrl = 'https://skilltreats.com/api/cart/delete';
+        const reqHeader = new Headers({
+            
+        });
+        const reqOptions = { 
+            method: "POST", 
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                cartId: id,
+                token: this.state.token
+            })
+        };
+        const removeReq = new Request(baseUrl, reqOptions);
+        // Post to API
+        fetch(removeReq)
+        // Parse results
+        .then((result) => result.json())
+        // Remove list item from state on success
+        .then((jsonified) => {
+            if (!jsonified.success) {
+                console.log(jsonified);
+                return Promise.reject("Failed to remove item from cart");
+            }
+            const newCart = this.state.cartItems.filter((item) => {
+                return (item.id != id);
+            });
+            this.setState({cartItems: newCart});
+        }).catch((err) => console.log(err))
     }
 
     render() {
@@ -64,17 +101,10 @@ class CartList extends React.Component {
                     this.state.cartItems.map((item) => {
                         return (
                             <ListItem
-                                title={item.elective.name + ": " + item.quantity}
-                                key={item.id}>
-                                {/*<Text>
-                                    Name: {item.elective.name}
-                                </Text>
-                                <Text>
-                                    Date: {item.elective.date}
-                                </Text>
-                                <Text>
-                                    Quantity: {item.quantity}
-                                </Text>*/}
+                                title={item.elective.name}
+                                key={item.id}
+                                rightIcon={{name: 'remove-shopping-cart'}}
+                                onPress={() => this.removeFromCart(item.id)}>
                             </ListItem>
                         );
                     })

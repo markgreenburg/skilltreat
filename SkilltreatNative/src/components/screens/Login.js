@@ -34,14 +34,12 @@ class Login extends React.Component {
 
     /* Posts state info to login route, sets token, redirects user */
     submitLogin() {
-        console.log("submitting login");
         // Validate the login info from state
         if (!this.state.email || !this.state.email) {
             return this.validateState();
         }
         const baseUrl = "https://skilltreats.com/api/user/login";
         // POST to /login with the validated info
-        console.log("POSTing");
         fetch(baseUrl, {
             method: "POST",
             headers: {
@@ -62,7 +60,7 @@ class Login extends React.Component {
             return setToken(jsonified.data.token);
         // Navigate to the cart list if login successful
         }).then(() => {
-            this.props.navigation.navigate('CartList');
+            this.props.navigation.navigate('AccountProfile');
         // Handle errors
         }).catch((err) => {
             console.log(err);

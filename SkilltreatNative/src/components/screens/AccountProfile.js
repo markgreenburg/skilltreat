@@ -15,9 +15,13 @@ class AccountProfile extends React.Component {
     constructor(props) {
         super(props);
         this.state = { user: {}, };
-    
+        
         // Bind Helpers
         this.logOut = this.logOut.bind(this);
+    }
+
+    componentDidMount() {
+        console.log("Account Tab Mounted");
     }
 
     logOut() {
@@ -27,8 +31,7 @@ class AccountProfile extends React.Component {
             .removeItem("auth_token")
             // Navigate back out of the account profile
             .then(() => {
-                // this.props.navigation.goBack();
-                NavigationActions.reset({ index: 1, routeName: 'ElectiveList' });
+                this.props.navigation.navigate('Login');
             }).catch((err) => console.log(err));
     }
 
