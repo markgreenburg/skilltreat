@@ -38,6 +38,16 @@ app.use('/api', cart);
 const order = require('./routes/order');
 app.use('/api', order);
 
+// Generic error handler
+app.use((err, req, res, next) => {
+    console.log(err);
+    res
+        .json({
+            message: "Request Failed",
+            data: err,
+            success: false
+        });
+});
 
 // Test db connection and export
 var models = require('./models/index');
