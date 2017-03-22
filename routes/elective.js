@@ -20,7 +20,9 @@ router.get('/elective', (req, res, next) => {
                 startTime: {
                     gte: new Date()
                 }
-            }
+            }, include: [{
+                model: db.venue
+            }]
         }).then((results) => {
             if (!results) {
                 return Promise.reject(
