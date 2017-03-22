@@ -6,8 +6,15 @@ import { StackNavigator } from 'react-navigation';
 import AccountProfile from '../screens/AccountProfile';
 
 /* Define the nested Navigator for this tab */
-const AccountNavigator = StackNavigator({
-    AccountProfile: { screen: AccountProfile },
-});
+const AccountNavigator = StackNavigator(
+    {
+        AccountProfile: { screen: AccountProfile },
+    }, {
+        navigationOptions: {
+            header: {
+                visible: false,
+            },
+        },
+    });
 
 export default AccountNavigator;

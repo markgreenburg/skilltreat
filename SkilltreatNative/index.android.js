@@ -22,7 +22,7 @@ import AccountNavigator from './src/components/navigators/AccountNavigator';
 
 /* App layout is contained within a 3-tab react-native-navigation comopnent */
 const SkilltreatNative = TabNavigator({
-    Upcoming: { screen: ElectiveNavigator },
+    Treats: { screen: ElectiveNavigator },
     Cart: { screen: CartNavigator },
     Account: { screen: AccountNavigator },
 });

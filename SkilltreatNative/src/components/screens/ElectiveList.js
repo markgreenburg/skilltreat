@@ -21,10 +21,6 @@ class ElectiveList extends React.Component {
             .catch(err => console.log(err));
     }
 
-    static navigationOptions = {
-        title: "All Upcoming Treats"
-    }
-
     render() {
         const { navigate } = this.props.navigation;
         if (!this.state.electives.length) {

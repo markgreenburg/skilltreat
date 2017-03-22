@@ -26,7 +26,8 @@ class CartList extends React.Component {
         .then((token) => {
             if (!token) {
                 console.log("No token found");
-                return;
+                const { navigate } = this.props.navigation;
+                return navigate('Login');
             }
             console.log("token found");
             // Set options
@@ -51,10 +52,6 @@ class CartList extends React.Component {
     }
 
     render() {
-        const { navigate } = this.props.navigation;
-        if (!this.state.token) {
-            return <Login />
-        }
         if (!this.state.cartItems.length) {
             return (
                 <Text>There are no items in your cart</Text>
@@ -64,11 +61,12 @@ class CartList extends React.Component {
             <ScrollView>
                 <List>
                 {
-                    this.state.cartItems.maps((item) => {
+                    this.state.cartItems.map((item) => {
                         return (
-                            <ListItem 
+                            <ListItem
+                                title={item.elective.name + ": " + item.quantity}
                                 key={item.id}>
-                                <Text>
+                                {/*<Text>
                                     Name: {item.elective.name}
                                 </Text>
                                 <Text>
@@ -76,7 +74,7 @@ class CartList extends React.Component {
                                 </Text>
                                 <Text>
                                     Quantity: {item.quantity}
-                                </Text>
+                                </Text>*/}
                             </ListItem>
                         );
                     })

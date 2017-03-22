@@ -7,9 +7,16 @@ import CartList from '../screens/CartList'
 import Login from '../screens/Login'
 
 /* Define the nested Navigator for this tab */
-const CartNavigator = StackNavigator({
-    CartList: { screen: CartList },
-    Login: { screen: Login },
-});
+const CartNavigator = StackNavigator(
+    {
+        CartList: { screen: CartList },
+        Login: { screen: Login },
+    }, {
+        navigationOptions: {
+            header: {
+                visible: false,
+            },
+        },
+    });
 
 export default CartNavigator;
