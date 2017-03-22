@@ -20,7 +20,7 @@ import CartNavigator from './src/components/navigators/CartNavigator';
 import AccountNavigator from './src/components/navigators/AccountNavigator';
 
 
-/* App layout is contained within a 3-tab react-native-navigation comopnent */
+/* App layout is contained within a 3-tab react-native-navigation component */
 const SkilltreatNative = TabNavigator({
     Treats: { screen: ElectiveNavigator },
     Cart: { screen: CartNavigator },

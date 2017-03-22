@@ -5,13 +5,35 @@ import {
     StyleSheet,
     Text,
     ScrollView,
+    AsyncStorage,
 } from 'react-native';
+import { Button, } from 'react-native-elements';
+import { NavigationActions } from 'react-navigation';
+
 
 class AccountProfile extends React.Component {
-    constructor() {
-        super();
-        this.state = { user: {}, }
+    constructor(props) {
+        super(props);
+        this.state = { user: {}, };
+    
+        // Bind Helpers
+        this.logOut = this.logOut.bind(this);
     }
+
+    logOut() {
+        console.log("logging out");
+        AsyncStorage
+            // Remove token from local storage
+            .removeItem("auth_token")
+            // Navigate back out of the account profile
+            .then(() => {
+                // this.props.navigation.goBack();
+                NavigationActions.reset({ index: 1, routeName: 'ElectiveList' });
+            }).catch((err) => console.log(err));
+    }
+
+
+
 
     // componentDidMount() {
     //     // 1. Get the token
@@ -21,7 +43,14 @@ class AccountProfile extends React.Component {
     // }
 
     render() {
-        return <Text>Account Profile Screen</Text>;
+        return (
+            <ScrollView>
+                <Button
+                    title="Log Out"
+                    onPress={this.logOut}
+                />
+            </ScrollView>
+        );
     }
 }
 
