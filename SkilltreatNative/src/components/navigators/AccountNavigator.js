@@ -3,12 +3,12 @@ import { StackNavigator } from 'react-navigation';
 
 /* Required subcomponents */
 import ViewProfile from '../screens/ViewProfile';
-import Login from '../screens/Login'
+import Register from '../screens/Register'
 
 /* Define the nested Navigator for this tab */
 const AccountNavigator = StackNavigator(
     {
-        ViewProfile: { screen: AccountProfile },
+        ViewProfile: { screen: ViewProfile },
         Register: { screen: Register },
         EditProfile: { screen: EditProfile },
     }, {

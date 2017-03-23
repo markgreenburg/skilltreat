@@ -60,7 +60,7 @@ class Login extends React.Component {
             return setToken(jsonified.data.token);
         // Navigate to the cart list if login successful
         }).then(() => {
-            this.props.navigation.navigate('AccountProfile');
+            this.props.navigation.navigate('ViewProfile');
         // Handle errors
         }).catch((err) => {
             console.log(err);
