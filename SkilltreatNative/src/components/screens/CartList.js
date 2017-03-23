@@ -25,7 +25,6 @@ class CartList extends React.Component {
         .then((token) => {
             if (!token) {
                 console.log("Cart Tab Mounted");
-
                 return;
             }
             // Set token to state since we'll need it again later
@@ -54,9 +53,6 @@ class CartList extends React.Component {
         console.log("removing!");
         // Set up the fetch
         const baseUrl = 'https://skilltreats.com/api/cart/delete';
-        const reqHeader = new Headers({
-            
-        });
         const reqOptions = { 
             method: "POST", 
             headers: {

@@ -3,7 +3,7 @@
  */
 
 import { AppRegistry } from 'react-native';
-import MainTab from './src/components/navigators/SkilltreatNative';
+import MainTab from './src/components/navigators/MainTab';
 
 AppRegistry.registerComponent('SkilltreatNative', () => MainTab);
 
