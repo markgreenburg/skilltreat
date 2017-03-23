@@ -4,7 +4,13 @@
  * Displays the account profile, or login screen if not auth'd
  */
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, ScrollView, } from 'react-native';
+import { 
+    View,
+    StyleSheet,
+    Text,
+    ScrollView,
+    TouchableHighlight,
+} from 'react-native';
 import { FormLabel, FormInput, Button } from 'react-native-elements';
 import { NavigationActions } from 'react-navigation';
 import { getToken, setToken, removeToken } from '../../Authentication';
@@ -31,12 +37,14 @@ class ViewProfile extends React.Component {
         this.validateInputs = this.validateInputs.bind(this);
         this.logIn = this.logIn.bind(this);
         this.logOut = this.logOut.bind(this);
+        this.touchTest = this.touchTest.bind(this);
     }
 
     componentDidMount() {
         getToken()
         .then((token) => {
             if (!token) {
+                console.log("View Profile Mounted");
                 return Promise.reject("No Token Found");
             }
             this.setState({token: token});
@@ -112,7 +120,13 @@ class ViewProfile extends React.Component {
         .catch((err) => console.log(err));
     }
 
+    touchTest() {
+        console.log("You're touching me!");
+        navigate('Regsiter');
+    }
+
     render() {
+        const { navigate } = this.props.navigation;
         // If token isn't present, render the Login form
         if (!this.state.token) {
             return (
@@ -133,6 +147,11 @@ class ViewProfile extends React.Component {
                     title="Log In"
                     onPress={this.logIn}
                 />
+                <Text>Or</Text>
+                <Button
+                    title="Sign Up"
+                    onPress={() => navigate('Register')}
+                />
             </View>
             );
         }
@@ -143,13 +162,39 @@ class ViewProfile extends React.Component {
                 <Text>{this.state.user.lName}</Text>
                 <Text>{this.state.user.email}</Text>
                 <Button
+                    title="Edit Profile"
+                    style={styles.button}
+                    onPress={() => navigate('EditProfile')}
+                />
+                <Button
+                    title="View Orders"
+                    style={styles.button}
+                    onPress={() => navigate('OrderList')}
+                />
+                <Button
                     title="Log Out"
+                    style={styles.button}
                     onPress={this.logOut}
                 />
             </ScrollView>
         );
     }
 }
+
+const styles = StyleSheet.create({
+    signup: {
+        color: 'blue',
+        fontWeight: 'bold',
+        fontSize: 18,
+        textAlign: 'center',
+        paddingTop: 20,
+    },
+    button: {
+        margin: 20
+    }
+});
+
+
 
 export default ViewProfile;
 

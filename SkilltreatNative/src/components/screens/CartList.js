@@ -13,8 +13,7 @@ const Promie = require('bluebird');
 class CartList extends React.Component {
     constructor() {
         super();
-        this.state = { cartItems: [], token: "" }
-
+        this.state = { cartItems: [], total: 0, token: "" }
         this.removeFromCart = this.removeFromCart.bind(this);
     }
 
@@ -24,8 +23,8 @@ class CartList extends React.Component {
         // 2. Fetch cart using the token
         .then((token) => {
             if (!token) {
-                console.log("Cart Tab Mounted");
-                return;
+                console.log("Cart List Mounted");
+                return Promise.reject("No Token Found");
             }
             // Set token to state since we'll need it again later
             this.setState({token: token});
@@ -44,17 +43,21 @@ class CartList extends React.Component {
         }).then((cartItems) => {
             return cartItems.json()
         }).then((jsonified) => {
-            this.setState({cartItems: jsonified.data});
+            const cartList = jsonified.data;
+            this.setState({cartItems: cartList});
+            const total = cartList.reduce((acc, item) => {
+                return acc + parseFloat(item.elective.price);
+            }, 0);
+            this.setState({total: total});
             console.log("Cart Tab Mounted");
         }).catch((err) => console.log(err));
     }
 
     removeFromCart(id) {
-        console.log("removing!");
         // Set up the fetch
         const baseUrl = 'https://skilltreats.com/api/cart/delete';
-        const reqOptions = { 
-            method: "POST", 
+        const reqOptions = {
+            method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -77,16 +80,35 @@ class CartList extends React.Component {
             const newCart = this.state.cartItems.filter((item) => {
                 return (item.id != id);
             });
+            const newTotal = newCart.reduce((acc, item) => {
+                return acc + parseFloat(item.elective.price);
+            }, 0);
             this.setState({cartItems: newCart});
+            this.setState({total: newTotal});
         }).catch((err) => console.log(err))
     }
-
+    
     render() {
+        const { navigate } = this.props.navigation;
+        // If user not logged in, prompt login
+        if (!this.state.token) {
+            return (
+                <View>
+                    <Text>You must be logged in to view your cart</Text>
+                    <Button
+                        title="Log In"
+                        onPress={() => navigate('ViewProfile')}
+                    />
+                </View>
+            );
+        }
+        // If uesr logged in, but has no items in cart
         if (!this.state.cartItems.length) {
             return (
                 <Text>There are no items in your cart</Text>
             );
         }
+        // If user logged in and has items in cart
         return (
             <ScrollView>
                 <List>
@@ -94,7 +116,7 @@ class CartList extends React.Component {
                     this.state.cartItems.map((item) => {
                         return (
                             <ListItem
-                                title={item.elective.name}
+                                title={item.elective.name + "| $" + item.elective.price}
                                 key={item.id}
                                 rightIcon={{name: 'remove-shopping-cart'}}
                                 onPress={() => this.removeFromCart(item.id)}>
@@ -103,6 +125,11 @@ class CartList extends React.Component {
                     })
                 }
                 </List>
+                <Text>Total: ${this.state.total}</Text>
+                <Button
+                    title="Check Out"
+                    onPress={() => navigate('Order', { total: this.state.total })}
+                />
             </ScrollView>
         );
     }
