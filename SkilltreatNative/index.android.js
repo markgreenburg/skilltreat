@@ -7,15 +7,6 @@ import MainTab from './src/components/navigators/SkilltreatNative';
 
 AppRegistry.registerComponent('SkilltreatNative', () => MainTab);
 
-// import React, { Component } from 'react';
-// class App extends Component {
-//     render() {
-//         return <MainTab />;
-//     }
-// }
-
-// AppRegistry.registerComponent('SkilltreatNative', () => App);
-
 
 
 

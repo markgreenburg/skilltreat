@@ -1,28 +1,33 @@
 'use strict';
+
+/**
+ * Displays the account profile, or login screen if not auth'd
+ */
 import React, { Component } from 'react';
-import {
-    View,
-    StyleSheet,
-    Text,
-    ScrollView,
-    AsyncStorage,
-} from 'react-native';
+import { View, StyleSheet, Text, ScrollView, } from 'react-native';
 import { Button, } from 'react-native-elements';
 import { NavigationActions } from 'react-navigation';
+import { getToken, setToken, removeToken } from '../../Authentication';
 
-
-class AccountProfile extends React.Component {
+class ViewProfile extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { user: {}, };
-        
+        this.state = {
+            user: {},
+            token: "",
+        };
         // Bind Helpers
         this.logOut = this.logOut.bind(this);
     }
 
-    componentDidMount() {
-        console.log("Account Tab Mounted");
-    }
+    // componentDidMount() {
+    //     if (!token) { return; }
+    //     const baseUrl = 'https://skilltreats.com/api/user/load';
+
+    //     // Load user data
+    //     // Save to state
+    //     console.log("Account Tab Mounted");
+    // }
 
     logOut() {
         console.log("logging out");
@@ -34,9 +39,6 @@ class AccountProfile extends React.Component {
                 this.props.navigation.navigate('Login');
             }).catch((err) => console.log(err));
     }
-
-
-
 
     // componentDidMount() {
     //     // 1. Get the token
@@ -57,5 +59,5 @@ class AccountProfile extends React.Component {
     }
 }
 
-export default AccountProfile;
+export default ViewProfile;
 

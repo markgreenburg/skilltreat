@@ -2,14 +2,15 @@
 import { StackNavigator } from 'react-navigation';
 
 /* Required subcomponents */
-import AccountProfile from '../screens/AccountProfile';
+import ViewProfile from '../screens/ViewProfile';
 import Login from '../screens/Login'
 
 /* Define the nested Navigator for this tab */
 const AccountNavigator = StackNavigator(
     {
-        AccountProfile: { screen: AccountProfile },
-        Login: { screen: Login },
+        ViewProfile: { screen: AccountProfile },
+        Register: { screen: Register },
+        EditProfile: { screen: EditProfile },
     }, {
         navigationOptions: {
             header: {
