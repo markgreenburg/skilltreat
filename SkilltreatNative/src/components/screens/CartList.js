@@ -109,6 +109,12 @@ class CartList extends React.Component {
             );
         }
         // If user logged in and has items in cart
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2,
+        });
+        const formattedTotal = formatter.format(this.state.total);
         return (
             <ScrollView>
                 <List>
@@ -116,7 +122,7 @@ class CartList extends React.Component {
                     this.state.cartItems.map((item) => {
                         return (
                             <ListItem
-                                title={item.elective.name + "| $" + item.elective.price}
+                                title={item.elective.name + " | $" + item.elective.price}
                                 key={item.id}
                                 rightIcon={{name: 'remove-shopping-cart'}}
                                 onPress={() => this.removeFromCart(item.id)}>
@@ -125,7 +131,7 @@ class CartList extends React.Component {
                     })
                 }
                 </List>
-                <Text>Total: ${this.state.total}</Text>
+                <Text>Total: {formattedTotal}</Text>
                 <Button
                     title="Check Out"
                     onPress={() => navigate('Order', { total: this.state.total })}

@@ -75,7 +75,6 @@ class Login extends React.Component {
         }
         return (
             <View>
-                {/*<Text>{errorMessage}</Text>*/}
                 <FormLabel>Email</FormLabel>
                 <FormInput 
                     onChangeText={ (text) => {
