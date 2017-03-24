@@ -9,10 +9,8 @@ import {
     StyleSheet,
     Text,
     ScrollView,
-    TouchableHighlight,
 } from 'react-native';
 import { FormLabel, FormInput, Button } from 'react-native-elements';
-import { NavigationActions } from 'react-navigation';
 import { getToken, setToken, removeToken } from '../../Authentication';
 const Promise = require('bluebird');
 
