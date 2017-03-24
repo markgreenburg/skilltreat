@@ -39,9 +39,9 @@ class Order extends React.Component {
             "card[cvc]": this.state.values.cvc
         };
         let formBody = [];
-        for (var property in cardDetails) {
-            var encodedKey = encodeURIComponent(property);
-            var encodedValue = encodeURIComponent(cardDetails[property]);
+        for (let property in cardDetails) {
+            const encodedKey = encodeURIComponent(property);
+            const encodedValue = encodeURIComponent(cardDetails[property]);
             formBody.push(encodedKey + "=" + encodedValue);
         }
         formBody = formBody.join("&");
@@ -55,10 +55,35 @@ class Order extends React.Component {
             },
             body: formBody
         }).then((result) => result.json())
+        // Submit the charge request with the tokenized card info
         .then((jsonified) => {
+            console.log("jsonified.id");
+            console.log(jsonified.id);
+            const { params } = this.props.navigation.state;
+            const baseUrl = "https://skilltreats.com/api/order";
+            const reqHeaders = new Headers({
+                "x-access-token": params.token,
+                "Content-Type": "application/json"
+            });
+            const reqOptions = {
+                method: "POST",
+                headers: reqHeaders,
+                body: JSON.stringify({
+                    stripeToken: jsonified.id,
+                    total: params.total
+                })
+            };
+            console.log(reqOptions);
+            return fetch(baseUrl, reqOptions);
+        }).then((result) => result.json())
+        .then((jsonified) => {
+            console.log("Got result from skilltreats");
             console.log(jsonified);
+            if (!jsonified.success) {
+                return Promise.reject("Request failed");
+            }
+            this.props.navigation.navigate('OrderList');
         }).catch((err) => console.log(err));
-
     }
 
     render() {

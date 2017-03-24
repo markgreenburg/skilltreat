@@ -134,7 +134,10 @@ class CartList extends React.Component {
                 <Text>Total: {formattedTotal}</Text>
                 <Button
                     title="Check Out"
-                    onPress={() => navigate('Order', { total: this.state.total })}
+                    onPress={() => navigate('Order', { 
+                        total: this.state.total,
+                        token: this.state.token,
+                     })}
                 />
             </ScrollView>
         );
