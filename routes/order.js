@@ -53,7 +53,7 @@ router
             .create({
                 amount: parseFloat(total) * 100, // charge in cents
                 currency: "usd",
-                description: "skilltreats.com",
+                description: "skilltreats",
                 source: stripeToken,
             // 2. Create a new order with the paid amount and stripe info
             }).then((result) => {
