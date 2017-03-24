@@ -146,7 +146,7 @@ class ViewProfile extends React.Component {
                     onPress={this.logIn}
                     backgroundColor="#5492f3"
                 />
-                <Text>Or</Text>
+                <Text> </Text>
                 <Button
                     title="Sign Up"
                     backgroundColor="#5492f3"
@@ -193,6 +193,10 @@ const styles = StyleSheet.create({
     },
     button: {
         marginTop: 50
+    },
+    div: {
+        fontSize: 18,
+        textAlign: "center",
     }
 });
 
