@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   ScrollView,
+  View,
   Image,
 } from 'react-native';
 import { Button } from 'react-native-elements';
@@ -72,7 +73,8 @@ class Elective extends React.Component {
                 <Text style={styles.time}>{date}</Text>
                 <Text style={styles.time}>{startTime} - {endTime}</Text>
                 <Text style={styles.subheading}>Where:</Text>
-                <MapView 
+                <View style={styles.container}>
+                <MapView
                     style={styles.map}
                     initialRegion={{
                         latitude: coordinate.latitude,
@@ -80,14 +82,19 @@ class Elective extends React.Component {
                         latitudeDelta: 0.1,
                         longitudeDelta: 0.1,
                     }}>
-                    {/*<MapView.Marker
+                    <MapView.Marker
                         coordinate={coordinate}
-                        title={params.elective.venue.name}/>*/}
+                        title={params.elective.venue.name}/>
                 </MapView>
+                </View>
                 {/* TO-DO: Gray out button if not logged in */}
                 <Button
+                    backgroundColor="#5492f3"
                     title={"Add To Cart ($" + params.elective.price + ")"}
                     onPress={this.addToCart}
+                    raised
+                    iconRight
+                    icon={{name: "add-shopping-cart"}}
                 />
             </ScrollView>
         );
@@ -124,8 +131,25 @@ const styles = StyleSheet.create({
         paddingRight: 20
     },
     map: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: 300,
-        width: '80%'
+        width: 300,
+
+    },
+    container: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 300,
+        width: 300,
+        marginBottom: 20,
+    },
+    button: {
+        marginTop: 20,
     }
 })
 

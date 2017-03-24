@@ -108,7 +108,7 @@ class Order extends React.Component {
                 />
             </View>
             <Button
-                style={styles.button}
+                backgroundColor="#5492f3"
                 title={"Charge Card " + formattedTotal}
                 disabled={(!this.state.valid)}
                 onPress={this.submitOrder}

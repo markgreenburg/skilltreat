@@ -118,6 +118,7 @@ class Register extends React.Component {
                 />
                 <Button
                     title="Create Account"
+                    backgroundColor="#5492f3"
                     onPress={this.createAccount}
                     icon={{name: "check-circle"}}
                     iconRight

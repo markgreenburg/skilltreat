@@ -105,7 +105,7 @@ class CartList extends React.Component {
         // If uesr logged in, but has no items in cart
         if (!this.state.cartItems.length) {
             return (
-                <Text>There are no items in your cart</Text>
+                <Text style={styles.heading}>There are no items in your cart</Text>
             );
         }
         // If user logged in and has items in cart
@@ -133,6 +133,7 @@ class CartList extends React.Component {
                 </List>
                 <Text>Total: {formattedTotal}</Text>
                 <Button
+                    backgroundColor="#5492f3"
                     title="Check Out"
                     onPress={() => navigate('Order', { 
                         total: this.state.total,
@@ -143,5 +144,12 @@ class CartList extends React.Component {
         );
     }
 }
+
+const styles = StyleSheet.create({
+    heading: {
+        fontSize: 24,
+        textAlign: 'center',
+    }
+})
 
 export default CartList;

@@ -144,10 +144,12 @@ class ViewProfile extends React.Component {
                 <Button
                     title="Log In"
                     onPress={this.logIn}
+                    backgroundColor="#5492f3"
                 />
                 <Text>Or</Text>
                 <Button
                     title="Sign Up"
+                    backgroundColor="#5492f3"
                     onPress={() => navigate('Register')}
                 />
             </View>
@@ -161,17 +163,19 @@ class ViewProfile extends React.Component {
                 <Text>{this.state.user.email}</Text>
                 <Button
                     title="Edit Profile"
-                    style={styles.button}
+                    backgroundColor="#5492f3"
                     onPress={() => navigate('EditProfile')}
                 />
+                <Text> </Text>
                 <Button
                     title="View Orders"
-                    style={styles.button}
+                    backgroundColor="#5492f3"
                     onPress={() => navigate('OrderList')}
                 />
+                <Text> </Text>
                 <Button
                     title="Log Out"
-                    style={styles.button}
+                    backgroundColor="#5492f3"
                     onPress={this.logOut}
                 />
             </ScrollView>
@@ -188,7 +192,7 @@ const styles = StyleSheet.create({
         paddingTop: 20,
     },
     button: {
-        margin: 20
+        marginTop: 50
     }
 });
 

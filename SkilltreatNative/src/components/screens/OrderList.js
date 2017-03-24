@@ -23,15 +23,17 @@ class OrderList extends React.Component {
 
     componentDidMount() {
         // Get token from storage
+        console.log("Getting token to mount orders");
         getToken()
         .then((token) => {
+            console.log(token);
             if (!token) {
                 console.log("Orders Mounted");
                 return Promise.reject("No Token Found");
             }
             this.setState({token: token});
             // Fetch user's orders
-            const baseUrl = "https://skilltreats.com/api/orders";
+            const baseUrl = "https://skilltreats.com/api/order";
             const reqHeaders = new Headers({
                 "Content-Type": "application/json",
                 "x-access-token": token,
@@ -40,8 +42,11 @@ class OrderList extends React.Component {
                 method: "GET",
                 headers: reqHeaders
             });
-        }).then((orders) => orders.json())
-        .then((jsonified) => {
+        }).then((orders) => {
+            console.log("Got orders response");
+            console.log(orders);
+            return orders.json()
+        }).then((jsonified) => {
             if (!jsonified.data) {
                 return Promise.reject("No orders found for user");
             }

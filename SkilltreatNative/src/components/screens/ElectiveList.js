@@ -46,6 +46,7 @@ class ElectiveList extends React.Component {
                                         {elective.description}
                                     </Text>
                                     <Button
+                                        backgroundColor="#5492f3"
                                         title="View"
                                         onPress={() => {
                                             navigate('Elective', {
