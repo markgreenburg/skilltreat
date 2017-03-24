@@ -10,6 +10,7 @@ const mailer = require('../mailer/mailer');
 const jwt = require('jsonwebtoken');
 const auth = require('../middleware/authenticate');
 const Promise = require('bluebird');
+const uuid = require('uuid/v4');
 
 /* Create a new user */
 router.post('/user/register', (req, res, next) => {
@@ -56,13 +57,15 @@ router.post('/user/register', (req, res, next) => {
 // TO-DO: Auto-login on verification
 // TO-DO: New endpoint for blacklisting a 'verify' token
 /* Verify Account Email */
-router.get('/user/verify', (req, res, next) => {
+router.get('/user/verify', (req, res) => {
+    let foundUser = {};
     db.user
         .findOne({ where: {verificationToken: req.query.token} })
         .then((result) => {
             if (!result) {
                 return Promise.reject(new Error('Token Not Found'));
             }
+            foundUser = result;
             const now = new Date();
             if (now > result.verificationExpires) {
                 return Promise.reject(new Error('Token Expired'));
@@ -72,17 +75,45 @@ router.get('/user/verify', (req, res, next) => {
         }).then((verifiedUser) => {
             res
                 .status(200)
-                .json({
-                    message: "User validated",
-                    data: {
-                        email: verifiedUser.email,
-                        isVerified: verifiedUser.isVerified
-                    },
-                    success: true
-                });
+                .render('validated', {email: verifiedUser.email});
         }).catch((err) => {
             console.log(err);
-            return next(err);
+            res
+                .status(500)
+                .render('error', {id: foundUser.id});
+        });
+});
+
+/* Refresh validation */
+router.get('/user/:id/refresh', (req, res) => {
+    db.user
+        // Find user
+        .findOne({ where: {id: req.params.id} })
+        // Set new token
+        .then((result) => {
+            if (!result) {
+                return Promise.reject(new Error('User not found'));
+            }
+            result.verificationToken = uuid();
+            result.verificationExpires = 
+                new Date(Date.now() + (1000 * 60 * 60 * 24));
+            return result.save();
+        // Send another email
+        }).then((updatedUser) => {
+            return mailer.sendMail({
+                from: config.verificationEmail.from,
+                to: updatedUser.email,
+                subject: config.verificationEmail.subject,
+                text: config.verificationEmail.baseText 
+                        + config.verificationEmail.baseUrl 
+                        + updatedUser.verificationToken
+            });
+        }).then(() => res.status(200).render('reverify'))
+        .catch((err) => {
+            console.log(err);
+            res
+                .status(500)
+                .render('error');
         });
 });
 

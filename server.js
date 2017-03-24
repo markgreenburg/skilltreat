@@ -13,6 +13,12 @@ const app = express();
 //     cookie: {maxAge: timeOut}
 // };
 
+// Set public and view directories, view engine
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('views', __dirname + '/public/views');
+app.set('view engine', 'hbs');
+
 // Logging
 const morgan = require('morgan');
 app.use(morgan('dev'));
