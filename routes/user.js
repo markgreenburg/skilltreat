@@ -12,6 +12,9 @@ const auth = require('../middleware/authenticate');
 const Promise = require('bluebird');
 const uuid = require('uuid/v4');
 
+/* Debug */
+router.get('/user/debug', (req, res) => res.send("Works"));
+
 /* Create a new user */
 router.post('/user/register', (req, res, next) => {
     // create new user
