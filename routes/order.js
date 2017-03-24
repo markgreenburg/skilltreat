@@ -8,8 +8,8 @@ const db = require('../models/index');
 const auth = require('../middleware/authenticate');
 const Promise = require('bluebird');
 // Stripe imports
-import stripeSecret from '../config/config';
-const stripe = require('stripe')(stripeSecret);
+const config = require('../config/config');
+const stripe = require('stripe')(config.stripeSecret);
 
 router
     .route('/order')
