@@ -73,14 +73,10 @@ router.get('/user/verify', (req, res) => {
             result.isVerified = true;
             return result.save()
         }).then((verifiedUser) => {
-            res
-                .status(200)
-                .render('validated', {email: verifiedUser.email});
+            res.render('validated', {email: verifiedUser.email});
         }).catch((err) => {
             console.log(err);
-            res
-                .status(500)
-                .render('error', {id: foundUser.id});
+            res.render('error', {id: foundUser.id});
         });
 });
 
