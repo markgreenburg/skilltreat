@@ -51,7 +51,7 @@ router
         let foundCartItems = [];
         stripe.charges
             .create({
-                amount: total * 100, // charge in cents
+                amount: parseFloat(total) * 100, // charge in cents
                 currency: "usd",
                 description: "skilltreats.com",
                 source: stripeToken,
