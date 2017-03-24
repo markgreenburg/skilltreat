@@ -13,7 +13,7 @@ const Promise = require('bluebird');
 const uuid = require('uuid/v4');
 
 /* Debug */
-router.get('/user/debug', (req, res) => res.send("Works"));
+router.get('/user/debug', (req, res) => res.render('validated', {email: "someemail"}));
 
 /* Create a new user */
 router.post('/user/register', (req, res, next) => {
