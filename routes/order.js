@@ -7,6 +7,9 @@ const router = require('express').Router();
 const db = require('../models/index');
 const auth = require('../middleware/authenticate');
 const Promise = require('bluebird');
+// Stripe imports
+import stripeSecret from '../config/config';
+const stripe = require('stripe')(stripeSecret);
 
 router
     .route('/order')
@@ -34,25 +37,33 @@ router
     /* Post a new order */
     .post((req, res, next) => {
         // 1. Get Stripe API token from purchase and charged total
-        const stripeId = req.body.stripeId;
+        const stripeToken = req.body.stripeToken;
         const total = req.body.total;
         if (
-            (typeof stripeId === 'undefined' || stripeId === null)
+            (typeof stripeToken === 'undefined' || stripeToken === null)
             || (typeof total === 'undefined' || total === null)
         ) {
-            return next(new Error(`stripeId and total required to create 
+            return next(new Error(`stripeToken and total required to create 
                     order`));
         }
+        // 2. POST the charge using Stripe's API
         let newOrder = {};
         let foundCartItems = [];
-        db.order
+        stripe.charges
+            .create({
+                amount: total * 100, // charge in cents
+                currency: "usd",
+                description: "skilltreats.com",
+                source: stripeToken,
             // 2. Create a new order with the paid amount and stripe info
-            .create({ 
-                stripeId: stripeId, 
-                total: total, 
-                userId: req.jwtPayload.id
-            // 3. Get user's active cart items
+            }).then((result) => {
+                return db.order.create({
+                    stripeId: result.id,
+                    total: total,
+                    userId: req.jwtPayload.id
+                });
             }).then((order) => {
+            // 3. Get user's active cart items
                 newOrder = order;
                 return db.cart.findAll({ 
                     where: {
