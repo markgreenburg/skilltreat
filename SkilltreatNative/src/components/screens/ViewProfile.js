@@ -131,7 +131,7 @@ class ViewProfile extends React.Component {
             <View>
                 {/*<Text>{errorMessage}</Text>*/}
                 <FormLabel>Email</FormLabel>
-                <FormInput 
+                <FormInput
                     onChangeText={ (text) => {
                         this.setState({email: text});
                     }}

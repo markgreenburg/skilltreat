@@ -5,6 +5,7 @@ import {
     View,
     StyleSheet,
     ScrollView,
+    Text,
 } from 'react-native';
 import { FormLabel, FormInput, Button } from 'react-native-elements';
 const initState = {
@@ -78,6 +79,7 @@ class Register extends React.Component {
                 return Promise.reject(new Error("Something went wrong"));
             }
             this.setState({accountCreated: true});
+            this.setState({accountCreated: true});
         }).catch((err) => {
             console.log(err);
             return;
@@ -87,40 +89,67 @@ class Register extends React.Component {
 
     render() {
         const { navigate } = this.props.navigation;
+        if (!this.state.accountCreated) {
+            return (
+            <ScrollView>
+                <FormLabel>First Name</FormLabel>
+                <FormInput 
+                    onChangeText={ (text) => this.setState({fName: text}) }
+                />
+                <FormLabel>Last Name</FormLabel>
+                <FormInput
+                    onChangeText={ (text) => this.setState({lName: text}) }
+                />
+                <FormLabel>Email</FormLabel>
+                <FormInput
+                    onChangeText={ (text) => this.setState({email: text}) }
+                />
+                <FormLabel>Password</FormLabel>
+                <FormInput
+                    secureTextEntry
+                    onChangeText={ (text) => this.setState({password: text}) }
+                />
+                <FormLabel>Confirm Password</FormLabel>
+                <FormInput
+                    secureTextEntry
+                    onChangeText={ (text) => {
+                        this.setState({passwordConf: text});
+                    }}
+                />
+                <Button
+                    title="Create Account"
+                    onPress={this.createAccount}
+                    icon={{name: "check-circle"}}
+                    iconRight
+                    raised
+                />
+            </ScrollView>
+            );
+        }
+        // Once account creation succeeds, display action queue
         return (
-        <ScrollView>
-            <FormLabel>First Name</FormLabel>
-            <FormInput 
-                onChangeText={ (text) => this.setState({fName: text}) }
-            />
-            <FormLabel>Last Name</FormLabel>
-            <FormInput
-                onChangeText={ (text) => this.setState({lName: text}) }
-            />
-            <FormLabel>Email</FormLabel>
-            <FormInput
-                onChangeText={ (text) => this.setState({email: text}) }
-            />
-            <FormLabel>Password</FormLabel>
-            <FormInput
-                secureTextEntry
-                onChangeText={ (text) => this.setState({password: text}) }
-            />
-            <FormLabel>Confirm Password</FormLabel>
-            <FormInput
-                secureTextEntry
-                onChangeText={ (text) => this.setState({passwordConf: text}) }
-            />
-            <Button
-                title="Create Account"
-                onPress={this.createAccount}
-                icon={{name: "check-circle"}}
-                iconRight
-                raised
-            />
-        </ScrollView>
+            <ScrollView>
+                <Text style={styles.heading}>Thanks for signing up!</Text>
+                <Text style={styles.body}>Please check your email to verify your account</Text>
+                <Button
+                    title="Log In"
+                    style={styles.button}
+                    onPress={() => navigate('ViewProfile')}
+                />
+            </ScrollView>
         )
     }
 }
+
+const styles = StyleSheet.create({
+    heading: {
+        fontSize: 34,
+        textAlign: 'center'
+    },
+    body: {
+        fontSize: 18,
+        textAlign: 'center',
+    }
+});
 
 export default Register;
