@@ -37,7 +37,7 @@ router.get('/cart', auth.checkAuth, (req, res, next) => {
         });
 });
 
-/* Create new cart record / add items to cart. Only allows future electives */
+/* Create new cart record and add items to cart. Only allows future electives */
 router.post('/cart/add', auth.checkAuth, (req, res, next) => {
     const electiveId = req.body.electiveId;
     const quantity = req.body.quantity;
