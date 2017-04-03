@@ -131,10 +131,10 @@ class CartList extends React.Component {
                     })
                 }
                 </List>
-                <Text>Total: {formattedTotal}</Text>
+                <Text> </Text>
                 <Button
                     backgroundColor="#5492f3"
-                    title="Check Out"
+                    title={"Check Out (total: " + formattedTotal + ")"}
                     onPress={() => navigate('Order', { 
                         total: this.state.total,
                         token: this.state.token,
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     heading: {
         fontSize: 24,
         textAlign: 'center',
-    }
-})
+    },
+});
 
 export default CartList;
