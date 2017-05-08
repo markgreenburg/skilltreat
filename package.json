@@ -23,6 +23,7 @@
     "express": "^4.15.2",
     "express-session": "^1.15.1",
     "hbs": "^4.0.1",
+    "jasmine": "^2.5.3",
     "jsonwebtoken": "^7.3.0",
     "morgan": "^1.8.1",
     "nodemailer": "^3.1.5",
@@ -31,5 +32,13 @@
     "sequelize-cli": "^2.5.1",
     "stripe": "^4.16.0",
     "uuid": "^3.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.10.3",
+    "jasmine": "^2.5.3"
   }
 }
